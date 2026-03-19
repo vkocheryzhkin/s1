@@ -94,7 +94,7 @@ export const BurgerIngredients = ({
                 />
                 <div className={`${styles.price} mt-1 mb-1`}>
                   <span className="text text_type_digits-default">
-                    {ingredient.price}
+                    {ingredient.calories}
                   </span>
                   <CurrencyIcon type="primary" />
                 </div>
@@ -124,7 +124,7 @@ export const BurgerIngredients = ({
                 />
                 <div className={`${styles.price} mt-1 mb-1`}>
                   <span className="text text_type_digits-default">
-                    {ingredient.price}
+                    {ingredient.calories}
                   </span>
                   <CurrencyIcon type="primary" />
                 </div>
@@ -154,7 +154,7 @@ export const BurgerIngredients = ({
                 />
                 <div className={`${styles.price} mt-1 mb-1`}>
                   <span className="text text_type_digits-default">
-                    {ingredient.price}
+                    {ingredient.calories}
                   </span>
                   <CurrencyIcon type="primary" />
                 </div>

@@ -24,8 +24,11 @@ export const BurgerConstructor = ({
   );
   const mockFillings = fillingIngredients.slice(0, 4);
 
-  const totalPrice = mockFillings.reduce((sum, ingredient) => sum + ingredient.price, 0);
-  const orderPrice = bun ? totalPrice + bun.price * 2 : totalPrice;
+  const totalCalories = mockFillings.reduce(
+    (sum, ingredient) => sum + ingredient.calories,
+    0
+  );
+  const orderCalories = bun ? totalCalories + bun.calories * 2 : totalCalories;
 
   return (
     <section className={`${styles.burger_constructor} pt-25`}>
@@ -35,7 +38,7 @@ export const BurgerConstructor = ({
             type="top"
             isLocked={true}
             text={`${bun.name} (верх)`}
-            price={bun.price}
+            price={bun.calories}
             thumbnail={bun.image}
           />
         </div>
@@ -46,7 +49,7 @@ export const BurgerConstructor = ({
             <DragIcon type="primary" />
             <ConstructorElement
               text={ingredient.name}
-              price={ingredient.price}
+              price={ingredient.calories}
               thumbnail={ingredient.image}
             />
           </li>
@@ -58,14 +61,14 @@ export const BurgerConstructor = ({
             type="bottom"
             isLocked={true}
             text={`${bun.name} (низ)`}
-            price={bun.price}
+            price={bun.calories}
             thumbnail={bun.image}
           />
         </div>
       )}
       <div className={`${styles.total} mt-10`}>
         <div className={styles.total_price}>
-          <span className="text text_type_digits-medium">{orderPrice}</span>
+          <span className="text text_type_digits-medium">{orderCalories}</span>
           <CurrencyIcon type="primary" />
         </div>
         <Button
