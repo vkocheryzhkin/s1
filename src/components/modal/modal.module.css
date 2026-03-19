@@ -1,0 +1,39 @@
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 30;
+  width: 720px;
+  max-width: calc(100vw - 40px);
+  background: var(--background);
+  border: 1px solid rgb(76 76 255 / 20%);
+  border-radius: 40px;
+  transform: translate(-50%, -50%);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 64px;
+}
+
+.header_end {
+  justify-content: flex-end;
+}
+
+.title {
+  margin: 0;
+}
+
+.close {
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.body {
+  color: var(--text-primary-color);
+}
