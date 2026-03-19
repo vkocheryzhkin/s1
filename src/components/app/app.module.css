@@ -16,7 +16,7 @@
 .main {
   display: flex;
   justify-content: space-between;
-  width: 100%;
+  width: 1240px;
   max-width: 1240px;
   height: 100%;
   margin: 0 auto;

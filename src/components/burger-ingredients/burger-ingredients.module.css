@@ -1,9 +1,9 @@
 .burger_ingredients {
   display: flex;
   flex-direction: column;
-  width: 600px;
+  max-width: 600px;
   color: var(--text-primary-color);
-  font-family: 'JetBrains Mono', serif;
+  font-family: 'Jet Brains Mono', serif;
 }
 
 .menu {
