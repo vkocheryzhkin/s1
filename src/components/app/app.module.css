@@ -21,3 +21,12 @@
   margin: 0 auto;
   overflow: hidden;
 }
+
+.preloader,
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
