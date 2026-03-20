@@ -10,6 +10,36 @@ type TBurgerIngredientsProps = {
   onIngredientClick: (ingredient: TIngredient) => void;
 };
 
+type TIngredientProps = {
+  ingredient: TIngredient;
+  onIngredientClick: (ingredient: TIngredient) => void;
+};
+
+const Ingredient = ({
+  ingredient,
+  onIngredientClick,
+}: TIngredientProps): React.JSX.Element => (
+  <li>
+    <button
+      type="button"
+      className={styles.card}
+      onClick={() => onIngredientClick(ingredient)}
+    >
+      <Counter count={1} size="default" />
+      <img
+        src={ingredient.image}
+        alt={ingredient.name}
+        className={`${styles.image} pl-4 pr-4`}
+      />
+      <div className={`${styles.price} mt-1 mb-1`}>
+        <span className="text text_type_digits-default">{ingredient.calories}</span>
+        <CurrencyIcon type="primary" />
+      </div>
+      <p className={`${styles.name} text text_type_main-default`}>{ingredient.name}</p>
+    </button>
+  </li>
+);
+
 export const BurgerIngredients = ({
   ingredients,
   onIngredientClick,
@@ -80,29 +110,11 @@ export const BurgerIngredients = ({
         </h3>
         <ul className={`${styles.grid} mt-6`}>
           {buns.map((ingredient) => (
-            <li key={ingredient._id}>
-              <button
-                type="button"
-                className={styles.card}
-                onClick={() => onIngredientClick(ingredient)}
-              >
-                <Counter count={1} size="default" />
-                <img
-                  src={ingredient.image}
-                  alt={ingredient.name}
-                  className={`${styles.image} pl-4 pr-4`}
-                />
-                <div className={`${styles.price} mt-1 mb-1`}>
-                  <span className="text text_type_digits-default">
-                    {ingredient.calories}
-                  </span>
-                  <CurrencyIcon type="primary" />
-                </div>
-                <p className={`${styles.name} text text_type_main-default`}>
-                  {ingredient.name}
-                </p>
-              </button>
-            </li>
+            <Ingredient
+              key={ingredient._id}
+              ingredient={ingredient}
+              onIngredientClick={onIngredientClick}
+            />
           ))}
         </ul>
         <h3 className="text text_type_main-medium mt-10" ref={sauceSectionRef}>
@@ -110,29 +122,11 @@ export const BurgerIngredients = ({
         </h3>
         <ul className={`${styles.grid} mt-6`}>
           {sauces.map((ingredient) => (
-            <li key={ingredient._id}>
-              <button
-                type="button"
-                className={styles.card}
-                onClick={() => onIngredientClick(ingredient)}
-              >
-                <Counter count={1} size="default" />
-                <img
-                  src={ingredient.image}
-                  alt={ingredient.name}
-                  className={`${styles.image} pl-4 pr-4`}
-                />
-                <div className={`${styles.price} mt-1 mb-1`}>
-                  <span className="text text_type_digits-default">
-                    {ingredient.calories}
-                  </span>
-                  <CurrencyIcon type="primary" />
-                </div>
-                <p className={`${styles.name} text text_type_main-default`}>
-                  {ingredient.name}
-                </p>
-              </button>
-            </li>
+            <Ingredient
+              key={ingredient._id}
+              ingredient={ingredient}
+              onIngredientClick={onIngredientClick}
+            />
           ))}
         </ul>
         <h3 className="text text_type_main-medium mt-10" ref={mainSectionRef}>
@@ -140,29 +134,11 @@ export const BurgerIngredients = ({
         </h3>
         <ul className={`${styles.grid} mt-6`}>
           {fillings.map((ingredient) => (
-            <li key={ingredient._id}>
-              <button
-                type="button"
-                className={styles.card}
-                onClick={() => onIngredientClick(ingredient)}
-              >
-                <Counter count={1} size="default" />
-                <img
-                  src={ingredient.image}
-                  alt={ingredient.name}
-                  className={`${styles.image} pl-4 pr-4`}
-                />
-                <div className={`${styles.price} mt-1 mb-1`}>
-                  <span className="text text_type_digits-default">
-                    {ingredient.calories}
-                  </span>
-                  <CurrencyIcon type="primary" />
-                </div>
-                <p className={`${styles.name} text text_type_main-default`}>
-                  {ingredient.name}
-                </p>
-              </button>
-            </li>
+            <Ingredient
+              key={ingredient._id}
+              ingredient={ingredient}
+              onIngredientClick={onIngredientClick}
+            />
           ))}
         </ul>
       </div>
