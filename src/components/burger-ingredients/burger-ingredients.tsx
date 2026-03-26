@@ -1,5 +1,6 @@
 import { Counter, CurrencyIcon, Tab } from '@krgaa/react-developer-burger-ui-components';
 import { useEffect, useRef, useState } from 'react';
+import { useDrag } from 'react-dnd';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { setSelectedIngredient } from '@services/selected-ingredient-slice';
@@ -17,23 +18,34 @@ type TIngredientProps = {
 const Ingredient = ({
   ingredient,
   onIngredientClick,
-}: TIngredientProps): React.JSX.Element => (
-  <li>
-    <button type="button" className={styles.card} onClick={onIngredientClick}>
-      <Counter count={1} size="default" />
-      <img
-        src={ingredient.image}
-        alt={ingredient.name}
-        className={`${styles.image} pl-4 pr-4`}
-      />
-      <div className={`${styles.price} mt-1 mb-1`}>
-        <span className="text text_type_digits-default">{ingredient.calories}</span>
-        <CurrencyIcon type="primary" />
-      </div>
-      <p className={`${styles.name} text text_type_main-default`}>{ingredient.name}</p>
-    </button>
-  </li>
-);
+}: TIngredientProps): React.JSX.Element => {
+  const [, dragRef] = useDrag(() => ({
+    type: 'ingredient',
+    item: ingredient,
+  }));
+
+  return (
+    <li
+      ref={(node) => {
+        dragRef(node);
+      }}
+    >
+      <button type="button" className={styles.card} onClick={onIngredientClick}>
+        <Counter count={1} size="default" />
+        <img
+          src={ingredient.image}
+          alt={ingredient.name}
+          className={`${styles.image} pl-4 pr-4`}
+        />
+        <div className={`${styles.price} mt-1 mb-1`}>
+          <span className="text text_type_digits-default">{ingredient.calories}</span>
+          <CurrencyIcon type="primary" />
+        </div>
+        <p className={`${styles.name} text text_type_main-default`}>{ingredient.name}</p>
+      </button>
+    </li>
+  );
+};
 
 export const BurgerIngredients = (): React.JSX.Element => {
   type TBurgerTab = 'bun' | 'main' | 'sauce';

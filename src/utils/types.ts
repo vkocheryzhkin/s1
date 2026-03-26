@@ -13,6 +13,10 @@ export type TIngredient = {
   __v: number;
 };
 
+export type TConstructorIngredient = TIngredient & {
+  uuid: string;
+};
+
 export type TIngredientsResponse = {
   success: boolean;
   data: TIngredient[];

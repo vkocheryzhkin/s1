@@ -4,8 +4,10 @@ import {
   CurrencyIcon,
   DragIcon,
 } from '@krgaa/react-developer-burger-ui-components';
+import { useDrop } from 'react-dnd';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { addIngredient } from '@services/constructor-slice';
 import { createOrder } from '@services/order-slice';
 
 import type { AppDispatch, RootState } from '@services/store';
@@ -33,9 +35,26 @@ export const BurgerConstructor = ({
   const orderIngredientIds = bun
     ? [bun._id, ...fillingIngredients.map((ingredient) => ingredient._id), bun._id]
     : [];
+  const [{ isOver }, dropRef] = useDrop(
+    () => ({
+      accept: 'ingredient',
+      drop: (ingredient: RootState['ingredients']['items'][number]): void => {
+        dispatch(addIngredient(ingredient));
+      },
+      collect: (monitor): { isOver: boolean } => ({
+        isOver: monitor.isOver(),
+      }),
+    }),
+    [dispatch]
+  );
 
   return (
-    <section className={`${styles.burger_constructor} pt-25`}>
+    <section
+      ref={(node) => {
+        dropRef(node);
+      }}
+      className={`${styles.burger_constructor} pt-25 ${isOver ? styles.drop_active : ''}`}
+    >
       {bun && (
         <div className={`${styles.blocked_item} ml-8`}>
           <ConstructorElement
@@ -47,9 +66,25 @@ export const BurgerConstructor = ({
           />
         </div>
       )}
+      {!bun && (
+        <div className={`${styles.blocked_item} ml-8`}>
+          <div
+            className={`${styles.placeholder} text text_type_main-default text_color_inactive`}
+          >
+            Перетащите булку (верх)
+          </div>
+        </div>
+      )}
       <ul className={`${styles.ingredients} custom-scroll`}>
+        {fillingIngredients.length === 0 && (
+          <li
+            className={`${styles.placeholder} text text_type_main-default text_color_inactive`}
+          >
+            Перетащите начинку
+          </li>
+        )}
         {fillingIngredients.map((ingredient) => (
-          <li key={ingredient._id} className={styles.ingredient_row}>
+          <li key={ingredient.uuid} className={styles.ingredient_row}>
             <DragIcon type="primary" />
             <ConstructorElement
               text={ingredient.name}
@@ -68,6 +103,15 @@ export const BurgerConstructor = ({
             price={bun.calories}
             thumbnail={bun.image}
           />
+        </div>
+      )}
+      {!bun && (
+        <div className={`${styles.blocked_item} ml-8`}>
+          <div
+            className={`${styles.placeholder} text text_type_main-default text_color_inactive`}
+          >
+            Перетащите булку (низ)
+          </div>
         </div>
       )}
       <div className={`${styles.total} mt-10`}>

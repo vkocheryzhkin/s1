@@ -1,12 +1,10 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, nanoid, type PayloadAction } from '@reduxjs/toolkit';
 
-import { fetchIngredients } from './ingredients-slice';
-
-import type { TIngredient } from '@utils/types';
+import type { TConstructorIngredient, TIngredient } from '@utils/types';
 
 type TConstructorState = {
   bun: TIngredient | null;
-  ingredients: TIngredient[];
+  ingredients: TConstructorIngredient[];
 };
 
 const initialState: TConstructorState = {
@@ -17,16 +15,24 @@ const initialState: TConstructorState = {
 export const constructorSlice = createSlice({
   name: 'constructor',
   initialState,
-  reducers: {},
-  extraReducers: (builder) => {
-    builder.addCase(fetchIngredients.fulfilled, (state, action) => {
-      const bun = action.payload.find((ingredient) => ingredient.type === 'bun') ?? null;
-      const ingredients = action.payload
-        .filter((ingredient) => ingredient.type !== 'bun')
-        .slice(0, 4);
+  reducers: {
+    addIngredient: {
+      reducer: (state, action: PayloadAction<TConstructorIngredient>) => {
+        if (action.payload.type === 'bun') {
+          state.bun = action.payload;
+          return;
+        }
 
-      state.bun = bun;
-      state.ingredients = ingredients;
-    });
+        state.ingredients.push(action.payload);
+      },
+      prepare: (ingredient: TIngredient) => ({
+        payload: {
+          ...ingredient,
+          uuid: nanoid(),
+        },
+      }),
+    },
   },
 });
+
+export const { addIngredient } = constructorSlice.actions;
