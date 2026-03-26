@@ -32,7 +32,12 @@ export const constructorSlice = createSlice({
         },
       }),
     },
+    removeIngredient: (state, action: PayloadAction<string>) => {
+      state.ingredients = state.ingredients.filter(
+        (ingredient) => ingredient.uuid !== action.payload
+      );
+    },
   },
 });
 
-export const { addIngredient } = constructorSlice.actions;
+export const { addIngredient, removeIngredient } = constructorSlice.actions;

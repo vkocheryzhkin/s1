@@ -7,7 +7,7 @@ import {
 import { useDrop } from 'react-dnd';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { addIngredient } from '@services/constructor-slice';
+import { addIngredient, removeIngredient } from '@services/constructor-slice';
 import { createOrder } from '@services/order-slice';
 
 import type { AppDispatch, RootState } from '@services/store';
@@ -90,6 +90,9 @@ export const BurgerConstructor = ({
               text={ingredient.name}
               price={ingredient.calories}
               thumbnail={ingredient.image}
+              handleClose={() => {
+                dispatch(removeIngredient(ingredient.uuid));
+              }}
             />
           </li>
         ))}
