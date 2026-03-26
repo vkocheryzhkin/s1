@@ -13,6 +13,7 @@ import {
   removeIngredient,
 } from '@services/constructor-slice';
 import { createOrder } from '@services/order-slice';
+import { selectOrderPrice } from '@services/selectors';
 
 import type { AppDispatch, RootState } from '@services/store';
 import type { TConstructorIngredient } from '@utils/types';
@@ -89,12 +90,7 @@ export const BurgerConstructor = ({
   const fillingIngredients = useSelector(
     (state: RootState) => state.burgerConstructor.ingredients
   );
-
-  const totalCalories = fillingIngredients.reduce(
-    (sum, ingredient) => sum + ingredient.calories,
-    0
-  );
-  const orderCalories = bun ? totalCalories + bun.calories * 2 : totalCalories;
+  const orderPrice = useSelector(selectOrderPrice);
   const orderIngredientIds = bun
     ? [bun._id, ...fillingIngredients.map((ingredient) => ingredient._id), bun._id]
     : [];
@@ -183,7 +179,7 @@ export const BurgerConstructor = ({
       )}
       <div className={`${styles.total} mt-10`}>
         <div className={styles.total_price}>
-          <span className="text text_type_digits-medium">{orderCalories}</span>
+          <span className="text text_type_digits-medium">{orderPrice}</span>
           <CurrencyIcon type="primary" />
         </div>
         <Button

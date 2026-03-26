@@ -10,7 +10,7 @@ const selectConstructorIngredients = (state: RootState): TConstructorIngredient[
 
 export const selectIngredientCounters = createSelector(
   [selectConstructorBun, selectConstructorIngredients],
-  (bun, ingredients) => {
+  (bun, ingredients): Record<string, number> => {
     const counters: Record<string, number> = {};
 
     if (bun) {
@@ -22,5 +22,17 @@ export const selectIngredientCounters = createSelector(
     }
 
     return counters;
+  }
+);
+
+export const selectOrderPrice = createSelector(
+  [selectConstructorBun, selectConstructorIngredients],
+  (bun, ingredients): number => {
+    const ingredientsPrice = ingredients.reduce(
+      (sum, ingredient) => sum + ingredient.calories,
+      0
+    );
+
+    return bun ? ingredientsPrice + bun.calories * 2 : ingredientsPrice;
   }
 );
