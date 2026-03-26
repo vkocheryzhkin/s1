@@ -1,18 +1,21 @@
 import { Counter, CurrencyIcon, Tab } from '@krgaa/react-developer-burger-ui-components';
 import { useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
+import { setSelectedIngredient } from '@services/selected-ingredient-slice';
+
+import type { AppDispatch } from '@services/store';
 import type { TIngredient } from '@utils/types';
 
 import styles from './burger-ingredients.module.css';
 
 type TBurgerIngredientsProps = {
   ingredients: TIngredient[];
-  onIngredientClick: (ingredient: TIngredient) => void;
 };
 
 type TIngredientProps = {
   ingredient: TIngredient;
-  onIngredientClick: (ingredient: TIngredient) => void;
+  onIngredientClick: () => void;
 };
 
 const Ingredient = ({
@@ -20,11 +23,7 @@ const Ingredient = ({
   onIngredientClick,
 }: TIngredientProps): React.JSX.Element => (
   <li>
-    <button
-      type="button"
-      className={styles.card}
-      onClick={() => onIngredientClick(ingredient)}
-    >
+    <button type="button" className={styles.card} onClick={onIngredientClick}>
       <Counter count={1} size="default" />
       <img
         src={ingredient.image}
@@ -42,9 +41,9 @@ const Ingredient = ({
 
 export const BurgerIngredients = ({
   ingredients,
-  onIngredientClick,
 }: TBurgerIngredientsProps): React.JSX.Element => {
   type TBurgerTab = 'bun' | 'main' | 'sauce';
+  const dispatch = useDispatch<AppDispatch>();
   const [currentTab, setCurrentTab] = useState<TBurgerTab>('bun');
   const bunSectionRef = useRef<HTMLHeadingElement>(null);
   const sauceSectionRef = useRef<HTMLHeadingElement>(null);
@@ -169,7 +168,7 @@ export const BurgerIngredients = ({
             <Ingredient
               key={ingredient._id}
               ingredient={ingredient}
-              onIngredientClick={onIngredientClick}
+              onIngredientClick={() => dispatch(setSelectedIngredient(ingredient))}
             />
           ))}
         </ul>
@@ -181,7 +180,7 @@ export const BurgerIngredients = ({
             <Ingredient
               key={ingredient._id}
               ingredient={ingredient}
-              onIngredientClick={onIngredientClick}
+              onIngredientClick={() => dispatch(setSelectedIngredient(ingredient))}
             />
           ))}
         </ul>
@@ -193,7 +192,7 @@ export const BurgerIngredients = ({
             <Ingredient
               key={ingredient._id}
               ingredient={ingredient}
-              onIngredientClick={onIngredientClick}
+              onIngredientClick={() => dispatch(setSelectedIngredient(ingredient))}
             />
           ))}
         </ul>

@@ -1,5 +1,6 @@
 import { Preloader } from '@krgaa/react-developer-burger-ui-components';
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { AppHeader } from '@components/app-header/app-header';
 import { BurgerConstructor } from '@components/burger-constructor/burger-constructor';
@@ -8,14 +9,18 @@ import { IngredientDetails } from '@components/ingredient-details/ingredient-det
 import { Modal } from '@components/modal/modal';
 import { OrderDetails } from '@components/order-details/order-details';
 import { useGetIngredientsQuery } from '@services/burger-api';
+import { clearSelectedIngredient } from '@services/selected-ingredient-slice';
 
-import type { TIngredient } from '@utils/types';
+import type { AppDispatch, RootState } from '@services/store';
 
 import styles from './app.module.css';
 
 export const App = (): React.JSX.Element => {
+  const dispatch = useDispatch<AppDispatch>();
   const { data: ingredients = [], isLoading, error } = useGetIngredientsQuery();
-  const [selectedIngredient, setSelectedIngredient] = useState<TIngredient | null>(null);
+  const selectedIngredient = useSelector(
+    (state: RootState) => state.selectedIngredient.ingredient
+  );
   const [isOrderModalOpen, setIsOrderModalOpen] = useState<boolean>(false);
 
   if (isLoading) {
@@ -50,17 +55,17 @@ export const App = (): React.JSX.Element => {
         Соберите бургер
       </h1>
       <main className={`${styles.main} pl-5 pr-5`}>
-        <BurgerIngredients
-          ingredients={ingredients}
-          onIngredientClick={setSelectedIngredient}
-        />
+        <BurgerIngredients ingredients={ingredients} />
         <BurgerConstructor
           ingredients={ingredients}
           onOpenOrderDetails={() => setIsOrderModalOpen(true)}
         />
       </main>
       {selectedIngredient && (
-        <Modal title="Детали ингредиента" onClose={() => setSelectedIngredient(null)}>
+        <Modal
+          title="Детали ингредиента"
+          onClose={() => dispatch(clearSelectedIngredient())}
+        >
           <IngredientDetails ingredient={selectedIngredient} />
         </Modal>
       )}
