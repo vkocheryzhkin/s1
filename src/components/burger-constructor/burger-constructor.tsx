@@ -4,18 +4,81 @@ import {
   CurrencyIcon,
   DragIcon,
 } from '@krgaa/react-developer-burger-ui-components';
-import { useDrop } from 'react-dnd';
+import { useDrag, useDrop } from 'react-dnd';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { addIngredient, removeIngredient } from '@services/constructor-slice';
+import {
+  addIngredient,
+  moveIngredient,
+  removeIngredient,
+} from '@services/constructor-slice';
 import { createOrder } from '@services/order-slice';
 
 import type { AppDispatch, RootState } from '@services/store';
+import type { TConstructorIngredient } from '@utils/types';
 
 import styles from './burger-constructor.module.css';
 
 type TBurgerConstructorProps = {
   onOpenOrderDetails: () => void;
+};
+type TConstructorDragItem = {
+  index: number;
+  uuid: string;
+};
+type TConstructorItemProps = {
+  ingredient: TConstructorIngredient;
+  index: number;
+  moveCard: (fromIndex: number, toIndex: number) => void;
+  onRemove: (uuid: string) => void;
+};
+
+const ConstructorItem = ({
+  ingredient,
+  index,
+  moveCard,
+  onRemove,
+}: TConstructorItemProps): React.JSX.Element => {
+  const [, dropRef] = useDrop<TConstructorDragItem>(
+    () => ({
+      accept: 'constructor-ingredient',
+      hover: (item): void => {
+        if (item.index === index) {
+          return;
+        }
+
+        moveCard(item.index, index);
+        item.index = index;
+      },
+    }),
+    [index, moveCard]
+  );
+  const [, dragRef] = useDrag(
+    () => ({
+      type: 'constructor-ingredient',
+      item: { uuid: ingredient.uuid, index },
+    }),
+    [ingredient.uuid, index]
+  );
+
+  return (
+    <li
+      ref={(node) => {
+        dragRef(dropRef(node));
+      }}
+      className={styles.ingredient_row}
+    >
+      <DragIcon type="primary" />
+      <ConstructorElement
+        text={ingredient.name}
+        price={ingredient.calories}
+        thumbnail={ingredient.image}
+        handleClose={() => {
+          onRemove(ingredient.uuid);
+        }}
+      />
+    </li>
+  );
 };
 
 export const BurgerConstructor = ({
@@ -35,6 +98,9 @@ export const BurgerConstructor = ({
   const orderIngredientIds = bun
     ? [bun._id, ...fillingIngredients.map((ingredient) => ingredient._id), bun._id]
     : [];
+  const handleMoveIngredient = (fromIndex: number, toIndex: number): void => {
+    dispatch(moveIngredient({ fromIndex, toIndex }));
+  };
   const [{ isOver }, dropRef] = useDrop(
     () => ({
       accept: 'ingredient',
@@ -83,18 +149,16 @@ export const BurgerConstructor = ({
             Перетащите начинку
           </li>
         )}
-        {fillingIngredients.map((ingredient) => (
-          <li key={ingredient.uuid} className={styles.ingredient_row}>
-            <DragIcon type="primary" />
-            <ConstructorElement
-              text={ingredient.name}
-              price={ingredient.calories}
-              thumbnail={ingredient.image}
-              handleClose={() => {
-                dispatch(removeIngredient(ingredient.uuid));
-              }}
-            />
-          </li>
+        {fillingIngredients.map((ingredient, index) => (
+          <ConstructorItem
+            key={ingredient.uuid}
+            ingredient={ingredient}
+            index={index}
+            moveCard={handleMoveIngredient}
+            onRemove={(uuid) => {
+              dispatch(removeIngredient(uuid));
+            }}
+          />
         ))}
       </ul>
       {bun && (
