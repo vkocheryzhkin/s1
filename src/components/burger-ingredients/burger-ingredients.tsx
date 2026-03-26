@@ -4,6 +4,7 @@ import { useDrag } from 'react-dnd';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { setSelectedIngredient } from '@services/selected-ingredient-slice';
+import { selectIngredientCounters } from '@services/selectors';
 
 import type { AppDispatch, RootState } from '@services/store';
 import type { TIngredient } from '@utils/types';
@@ -12,11 +13,13 @@ import styles from './burger-ingredients.module.css';
 
 type TIngredientProps = {
   ingredient: TIngredient;
+  count: number;
   onIngredientClick: () => void;
 };
 
 const Ingredient = ({
   ingredient,
+  count,
   onIngredientClick,
 }: TIngredientProps): React.JSX.Element => {
   const [, dragRef] = useDrag(() => ({
@@ -31,7 +34,7 @@ const Ingredient = ({
       }}
     >
       <button type="button" className={styles.card} onClick={onIngredientClick}>
-        <Counter count={1} size="default" />
+        {count > 0 && <Counter count={count} size="default" />}
         <img
           src={ingredient.image}
           alt={ingredient.name}
@@ -51,6 +54,7 @@ export const BurgerIngredients = (): React.JSX.Element => {
   type TBurgerTab = 'bun' | 'main' | 'sauce';
   const dispatch = useDispatch<AppDispatch>();
   const ingredients = useSelector((state: RootState) => state.ingredients.items);
+  const ingredientCounters = useSelector(selectIngredientCounters);
   const [currentTab, setCurrentTab] = useState<TBurgerTab>('bun');
   const bunSectionRef = useRef<HTMLHeadingElement>(null);
   const sauceSectionRef = useRef<HTMLHeadingElement>(null);
@@ -175,6 +179,7 @@ export const BurgerIngredients = (): React.JSX.Element => {
             <Ingredient
               key={ingredient._id}
               ingredient={ingredient}
+              count={ingredientCounters[ingredient._id] ?? 0}
               onIngredientClick={() => dispatch(setSelectedIngredient(ingredient))}
             />
           ))}
@@ -187,6 +192,7 @@ export const BurgerIngredients = (): React.JSX.Element => {
             <Ingredient
               key={ingredient._id}
               ingredient={ingredient}
+              count={ingredientCounters[ingredient._id] ?? 0}
               onIngredientClick={() => dispatch(setSelectedIngredient(ingredient))}
             />
           ))}
@@ -199,6 +205,7 @@ export const BurgerIngredients = (): React.JSX.Element => {
             <Ingredient
               key={ingredient._id}
               ingredient={ingredient}
+              count={ingredientCounters[ingredient._id] ?? 0}
               onIngredientClick={() => dispatch(setSelectedIngredient(ingredient))}
             />
           ))}
