@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { API_URL } from '@utils/constants';
+import { request } from '@utils/request';
 
 import type { TCreateOrderRequest, TCreateOrderResponse } from '@utils/types';
 
@@ -20,19 +20,13 @@ export const createOrder = createAsyncThunk<number, TCreateOrderRequest>(
   'order/createOrder',
   async (payload, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${API_URL}/orders`, {
+      const data = await request<TCreateOrderResponse>('/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
       });
-
-      if (!response.ok) {
-        throw new Error(`Ошибка оформления заказа: ${response.status}`);
-      }
-
-      const data = (await response.json()) as TCreateOrderResponse;
 
       if (!data.success) {
         throw new Error('Некорректный ответ от сервера');

@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { API_URL } from '@utils/constants';
+import { request } from '@utils/request';
 
 import type { TIngredient, TIngredientsResponse } from '@utils/types';
 
@@ -20,13 +20,7 @@ export const fetchIngredients = createAsyncThunk<TIngredient[]>(
   'ingredients/fetchIngredients',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${API_URL}/ingredients`);
-
-      if (!response.ok) {
-        throw new Error(`Ошибка загрузки ингредиентов: ${response.status}`);
-      }
-
-      const data = (await response.json()) as TIngredientsResponse;
+      const data = await request<TIngredientsResponse>('/ingredients');
 
       if (!data.success || !Array.isArray(data.data)) {
         throw new Error('Некорректный ответ от сервера');
