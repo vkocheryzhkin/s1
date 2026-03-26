@@ -1,5 +1,5 @@
 import { Counter, CurrencyIcon, Tab } from '@krgaa/react-developer-burger-ui-components';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import type { TIngredient } from '@utils/types';
 
@@ -44,18 +44,15 @@ export const BurgerIngredients = ({
   ingredients,
   onIngredientClick,
 }: TBurgerIngredientsProps): React.JSX.Element => {
-  const [currentTab, setCurrentTab] = useState<'bun' | 'main' | 'sauce'>('bun');
+  type TBurgerTab = 'bun' | 'main' | 'sauce';
+  const [currentTab, setCurrentTab] = useState<TBurgerTab>('bun');
   const bunSectionRef = useRef<HTMLHeadingElement>(null);
   const sauceSectionRef = useRef<HTMLHeadingElement>(null);
   const mainSectionRef = useRef<HTMLHeadingElement>(null);
+  const ingredientsContainerRef = useRef<HTMLDivElement>(null);
 
-  const scrollToSection = (tab: 'bun' | 'main' | 'sauce'): void => {
-    setCurrentTab(tab);
-
-    const sectionMap: Record<
-      'bun' | 'main' | 'sauce',
-      React.RefObject<HTMLHeadingElement | null>
-    > = {
+  const scrollToSection = (tab: TBurgerTab): void => {
+    const sectionMap: Record<TBurgerTab, React.RefObject<HTMLHeadingElement | null>> = {
       bun: bunSectionRef,
       main: mainSectionRef,
       sauce: sauceSectionRef,
@@ -70,6 +67,62 @@ export const BurgerIngredients = ({
   const buns = ingredients.filter((ingredient) => ingredient.type === 'bun');
   const sauces = ingredients.filter((ingredient) => ingredient.type === 'sauce');
   const fillings = ingredients.filter((ingredient) => ingredient.type === 'main');
+
+  useEffect(() => {
+    const container = ingredientsContainerRef.current;
+    if (!container) return;
+
+    const getClosestTabToContainerTopLeft = (): TBurgerTab => {
+      const containerRect = container.getBoundingClientRect();
+
+      const sectionCandidates: {
+        tab: TBurgerTab;
+        el: HTMLHeadingElement | null;
+      }[] = [
+        { tab: 'bun', el: bunSectionRef.current },
+        { tab: 'sauce', el: sauceSectionRef.current },
+        { tab: 'main', el: mainSectionRef.current },
+      ];
+
+      let bestTab: TBurgerTab = 'bun';
+      let bestDistance = Number.POSITIVE_INFINITY;
+
+      for (const { tab, el } of sectionCandidates) {
+        if (!el) continue;
+
+        const rect = el.getBoundingClientRect();
+        const dx = rect.left - containerRect.left;
+        const dy = rect.top - containerRect.top;
+        const distance = dx * dx + dy * dy; // Squared Euclidean distance
+
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestTab = tab;
+        }
+      }
+
+      return bestTab;
+    };
+
+    let rafId: number | null = null;
+    const onScroll = (): void => {
+      if (rafId !== null) return;
+      rafId = window.requestAnimationFrame(() => {
+        rafId = null;
+        const nextTab = getClosestTabToContainerTopLeft();
+        setCurrentTab((prev) => (prev === nextTab ? prev : nextTab));
+      });
+    };
+
+    // Initial sync (before user starts interacting).
+    onScroll();
+    container.addEventListener('scroll', onScroll, { passive: true });
+
+    return (): void => {
+      if (rafId !== null) window.cancelAnimationFrame(rafId);
+      container.removeEventListener('scroll', onScroll);
+    };
+  }, []);
 
   return (
     <section className={styles.burger_ingredients}>
@@ -104,7 +157,10 @@ export const BurgerIngredients = ({
           </Tab>
         </ul>
       </nav>
-      <div className={`${styles.ingredients} custom-scroll mt-10 pr-2`}>
+      <div
+        className={`${styles.ingredients} custom-scroll mt-10 pr-2`}
+        ref={ingredientsContainerRef}
+      >
         <h3 className="text text_type_main-medium" ref={bunSectionRef}>
           Булки
         </h3>
