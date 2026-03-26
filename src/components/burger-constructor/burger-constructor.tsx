@@ -4,31 +4,35 @@ import {
   CurrencyIcon,
   DragIcon,
 } from '@krgaa/react-developer-burger-ui-components';
+import { useDispatch, useSelector } from 'react-redux';
 
-import type { TIngredient } from '@utils/types';
+import { createOrder } from '@services/order-slice';
+
+import type { AppDispatch, RootState } from '@services/store';
 
 import styles from './burger-constructor.module.css';
 
 type TBurgerConstructorProps = {
-  ingredients: TIngredient[];
   onOpenOrderDetails: () => void;
 };
 
 export const BurgerConstructor = ({
-  ingredients,
   onOpenOrderDetails,
 }: TBurgerConstructorProps): React.JSX.Element => {
-  const bun = ingredients.find((ingredient) => ingredient.type === 'bun');
-  const fillingIngredients = ingredients.filter(
-    (ingredient) => ingredient.type !== 'bun'
+  const dispatch = useDispatch<AppDispatch>();
+  const bun = useSelector((state: RootState) => state.burgerConstructor.bun);
+  const fillingIngredients = useSelector(
+    (state: RootState) => state.burgerConstructor.ingredients
   );
-  const mockFillings = fillingIngredients.slice(0, 4);
 
-  const totalCalories = mockFillings.reduce(
+  const totalCalories = fillingIngredients.reduce(
     (sum, ingredient) => sum + ingredient.calories,
     0
   );
   const orderCalories = bun ? totalCalories + bun.calories * 2 : totalCalories;
+  const orderIngredientIds = bun
+    ? [bun._id, ...fillingIngredients.map((ingredient) => ingredient._id), bun._id]
+    : [];
 
   return (
     <section className={`${styles.burger_constructor} pt-25`}>
@@ -44,7 +48,7 @@ export const BurgerConstructor = ({
         </div>
       )}
       <ul className={`${styles.ingredients} custom-scroll`}>
-        {mockFillings.map((ingredient) => (
+        {fillingIngredients.map((ingredient) => (
           <li key={ingredient._id} className={styles.ingredient_row}>
             <DragIcon type="primary" />
             <ConstructorElement
@@ -75,7 +79,11 @@ export const BurgerConstructor = ({
           htmlType="button"
           type="primary"
           size="large"
-          onClick={onOpenOrderDetails}
+          onClick={() => {
+            onOpenOrderDetails();
+            void dispatch(createOrder({ ingredients: orderIngredientIds }));
+          }}
+          disabled={!bun}
         >
           Оформить заказ
         </Button>

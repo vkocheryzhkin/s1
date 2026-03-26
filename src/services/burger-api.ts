@@ -2,7 +2,12 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import { API_URL } from '@utils/constants';
 
-import type { TIngredient, TIngredientsResponse } from '@utils/types';
+import type {
+  TCreateOrderRequest,
+  TCreateOrderResponse,
+  TIngredient,
+  TIngredientsResponse,
+} from '@utils/types';
 
 export const burgerApi = createApi({
   reducerPath: 'burgerApi',
@@ -12,7 +17,14 @@ export const burgerApi = createApi({
       query: () => '/ingredients',
       transformResponse: (response: TIngredientsResponse) => response.data,
     }),
+    createOrder: builder.mutation<TCreateOrderResponse, TCreateOrderRequest>({
+      query: (body) => ({
+        url: '/orders',
+        method: 'POST',
+        body,
+      }),
+    }),
   }),
 });
 
-export const { useGetIngredientsQuery } = burgerApi;
+export const { useGetIngredientsQuery, useCreateOrderMutation } = burgerApi;

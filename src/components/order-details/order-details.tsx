@@ -1,14 +1,37 @@
 import { CheckMarkIcon } from '@krgaa/react-developer-burger-ui-components';
+import { useSelector } from 'react-redux';
+
+import type { RootState } from '@services/store';
 
 import styles from './order-details.module.css';
 
-const MOCK_ORDER_NUMBER = 12345;
-
 export const OrderDetails = (): React.JSX.Element => {
+  const {
+    number: orderNumber,
+    isLoading,
+    error,
+  } = useSelector((state: RootState) => state.order);
+
+  if (isLoading) {
+    return (
+      <div className={styles.root}>
+        <p className="text text_type_main-medium mt-10 mb-10">Оформляем заказ...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.root}>
+        <p className="text text_type_main-medium mt-10 mb-10">{error}</p>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.root}>
       <p className={`${styles.order_id} text text_type_digits-large mb-8`}>
-        {MOCK_ORDER_NUMBER}
+        {orderNumber}
       </p>
       <p className="text text_type_main-medium mb-15">идентификатор заказа</p>
       <div className={`${styles.icon_wrap} mb-15`}>

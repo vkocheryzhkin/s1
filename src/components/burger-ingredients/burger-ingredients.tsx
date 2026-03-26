@@ -1,17 +1,13 @@
 import { Counter, CurrencyIcon, Tab } from '@krgaa/react-developer-burger-ui-components';
 import { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { setSelectedIngredient } from '@services/selected-ingredient-slice';
 
-import type { AppDispatch } from '@services/store';
+import type { AppDispatch, RootState } from '@services/store';
 import type { TIngredient } from '@utils/types';
 
 import styles from './burger-ingredients.module.css';
-
-type TBurgerIngredientsProps = {
-  ingredients: TIngredient[];
-};
 
 type TIngredientProps = {
   ingredient: TIngredient;
@@ -39,11 +35,10 @@ const Ingredient = ({
   </li>
 );
 
-export const BurgerIngredients = ({
-  ingredients,
-}: TBurgerIngredientsProps): React.JSX.Element => {
+export const BurgerIngredients = (): React.JSX.Element => {
   type TBurgerTab = 'bun' | 'main' | 'sauce';
   const dispatch = useDispatch<AppDispatch>();
+  const ingredients = useSelector((state: RootState) => state.ingredients.items);
   const [currentTab, setCurrentTab] = useState<TBurgerTab>('bun');
   const bunSectionRef = useRef<HTMLHeadingElement>(null);
   const sauceSectionRef = useRef<HTMLHeadingElement>(null);
