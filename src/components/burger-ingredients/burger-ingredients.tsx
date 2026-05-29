@@ -1,31 +1,68 @@
 import { Counter, CurrencyIcon, Tab } from '@krgaa/react-developer-burger-ui-components';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useDrag } from 'react-dnd';
+import { useDispatch, useSelector } from 'react-redux';
 
+import { setSelectedIngredient } from '@services/selected-ingredient-slice';
+import { selectIngredientCounters } from '@services/selectors';
+
+import type { AppDispatch, RootState } from '@services/store';
 import type { TIngredient } from '@utils/types';
 
 import styles from './burger-ingredients.module.css';
 
-type TBurgerIngredientsProps = {
-  ingredients: TIngredient[];
-  onIngredientClick: (ingredient: TIngredient) => void;
+type TIngredientProps = {
+  ingredient: TIngredient;
+  count: number;
+  onIngredientClick: () => void;
 };
 
-export const BurgerIngredients = ({
-  ingredients,
+const Ingredient = ({
+  ingredient,
+  count,
   onIngredientClick,
-}: TBurgerIngredientsProps): React.JSX.Element => {
-  const [currentTab, setCurrentTab] = useState<'bun' | 'main' | 'sauce'>('bun');
+}: TIngredientProps): React.JSX.Element => {
+  const [, dragRef] = useDrag(() => ({
+    type: 'ingredient',
+    item: ingredient,
+  }));
+
+  return (
+    <li
+      ref={(node) => {
+        dragRef(node);
+      }}
+    >
+      <button type="button" className={styles.card} onClick={onIngredientClick}>
+        {count > 0 && <Counter count={count} size="default" />}
+        <img
+          src={ingredient.image}
+          alt={ingredient.name}
+          className={`${styles.image} pl-4 pr-4`}
+        />
+        <div className={`${styles.price} mt-1 mb-1`}>
+          <span className="text text_type_digits-default">{ingredient.calories}</span>
+          <CurrencyIcon type="primary" />
+        </div>
+        <p className={`${styles.name} text text_type_main-default`}>{ingredient.name}</p>
+      </button>
+    </li>
+  );
+};
+
+export const BurgerIngredients = (): React.JSX.Element => {
+  type TBurgerTab = 'bun' | 'main' | 'sauce';
+  const dispatch = useDispatch<AppDispatch>();
+  const ingredients = useSelector((state: RootState) => state.ingredients.items);
+  const ingredientCounters = useSelector(selectIngredientCounters);
+  const [currentTab, setCurrentTab] = useState<TBurgerTab>('bun');
   const bunSectionRef = useRef<HTMLHeadingElement>(null);
   const sauceSectionRef = useRef<HTMLHeadingElement>(null);
   const mainSectionRef = useRef<HTMLHeadingElement>(null);
+  const ingredientsContainerRef = useRef<HTMLDivElement>(null);
 
-  const scrollToSection = (tab: 'bun' | 'main' | 'sauce'): void => {
-    setCurrentTab(tab);
-
-    const sectionMap: Record<
-      'bun' | 'main' | 'sauce',
-      React.RefObject<HTMLHeadingElement | null>
-    > = {
+  const scrollToSection = (tab: TBurgerTab): void => {
+    const sectionMap: Record<TBurgerTab, React.RefObject<HTMLHeadingElement | null>> = {
       bun: bunSectionRef,
       main: mainSectionRef,
       sauce: sauceSectionRef,
@@ -40,6 +77,62 @@ export const BurgerIngredients = ({
   const buns = ingredients.filter((ingredient) => ingredient.type === 'bun');
   const sauces = ingredients.filter((ingredient) => ingredient.type === 'sauce');
   const fillings = ingredients.filter((ingredient) => ingredient.type === 'main');
+
+  useEffect(() => {
+    const container = ingredientsContainerRef.current;
+    if (!container) return;
+
+    const getClosestTabToContainerTopLeft = (): TBurgerTab => {
+      const containerRect = container.getBoundingClientRect();
+
+      const sectionCandidates: {
+        tab: TBurgerTab;
+        el: HTMLHeadingElement | null;
+      }[] = [
+        { tab: 'bun', el: bunSectionRef.current },
+        { tab: 'sauce', el: sauceSectionRef.current },
+        { tab: 'main', el: mainSectionRef.current },
+      ];
+
+      let bestTab: TBurgerTab = 'bun';
+      let bestDistance = Number.POSITIVE_INFINITY;
+
+      for (const { tab, el } of sectionCandidates) {
+        if (!el) continue;
+
+        const rect = el.getBoundingClientRect();
+        const dx = rect.left - containerRect.left;
+        const dy = rect.top - containerRect.top;
+        const distance = dx * dx + dy * dy; // Squared Euclidean distance
+
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestTab = tab;
+        }
+      }
+
+      return bestTab;
+    };
+
+    let rafId: number | null = null;
+    const onScroll = (): void => {
+      if (rafId !== null) return;
+      rafId = window.requestAnimationFrame(() => {
+        rafId = null;
+        const nextTab = getClosestTabToContainerTopLeft();
+        setCurrentTab((prev) => (prev === nextTab ? prev : nextTab));
+      });
+    };
+
+    // Initial sync (before user starts interacting).
+    onScroll();
+    container.addEventListener('scroll', onScroll, { passive: true });
+
+    return (): void => {
+      if (rafId !== null) window.cancelAnimationFrame(rafId);
+      container.removeEventListener('scroll', onScroll);
+    };
+  }, []);
 
   return (
     <section className={styles.burger_ingredients}>
@@ -74,35 +167,21 @@ export const BurgerIngredients = ({
           </Tab>
         </ul>
       </nav>
-      <div className={`${styles.ingredients} custom-scroll mt-10 pr-2`}>
+      <div
+        className={`${styles.ingredients} custom-scroll mt-10 pr-2`}
+        ref={ingredientsContainerRef}
+      >
         <h3 className="text text_type_main-medium" ref={bunSectionRef}>
           Булки
         </h3>
         <ul className={`${styles.grid} mt-6`}>
           {buns.map((ingredient) => (
-            <li key={ingredient._id}>
-              <button
-                type="button"
-                className={styles.card}
-                onClick={() => onIngredientClick(ingredient)}
-              >
-                <Counter count={1} size="default" />
-                <img
-                  src={ingredient.image}
-                  alt={ingredient.name}
-                  className={`${styles.image} pl-4 pr-4`}
-                />
-                <div className={`${styles.price} mt-1 mb-1`}>
-                  <span className="text text_type_digits-default">
-                    {ingredient.calories}
-                  </span>
-                  <CurrencyIcon type="primary" />
-                </div>
-                <p className={`${styles.name} text text_type_main-default`}>
-                  {ingredient.name}
-                </p>
-              </button>
-            </li>
+            <Ingredient
+              key={ingredient._id}
+              ingredient={ingredient}
+              count={ingredientCounters[ingredient._id] ?? 0}
+              onIngredientClick={() => dispatch(setSelectedIngredient(ingredient))}
+            />
           ))}
         </ul>
         <h3 className="text text_type_main-medium mt-10" ref={sauceSectionRef}>
@@ -110,29 +189,12 @@ export const BurgerIngredients = ({
         </h3>
         <ul className={`${styles.grid} mt-6`}>
           {sauces.map((ingredient) => (
-            <li key={ingredient._id}>
-              <button
-                type="button"
-                className={styles.card}
-                onClick={() => onIngredientClick(ingredient)}
-              >
-                <Counter count={1} size="default" />
-                <img
-                  src={ingredient.image}
-                  alt={ingredient.name}
-                  className={`${styles.image} pl-4 pr-4`}
-                />
-                <div className={`${styles.price} mt-1 mb-1`}>
-                  <span className="text text_type_digits-default">
-                    {ingredient.calories}
-                  </span>
-                  <CurrencyIcon type="primary" />
-                </div>
-                <p className={`${styles.name} text text_type_main-default`}>
-                  {ingredient.name}
-                </p>
-              </button>
-            </li>
+            <Ingredient
+              key={ingredient._id}
+              ingredient={ingredient}
+              count={ingredientCounters[ingredient._id] ?? 0}
+              onIngredientClick={() => dispatch(setSelectedIngredient(ingredient))}
+            />
           ))}
         </ul>
         <h3 className="text text_type_main-medium mt-10" ref={mainSectionRef}>
@@ -140,29 +202,12 @@ export const BurgerIngredients = ({
         </h3>
         <ul className={`${styles.grid} mt-6`}>
           {fillings.map((ingredient) => (
-            <li key={ingredient._id}>
-              <button
-                type="button"
-                className={styles.card}
-                onClick={() => onIngredientClick(ingredient)}
-              >
-                <Counter count={1} size="default" />
-                <img
-                  src={ingredient.image}
-                  alt={ingredient.name}
-                  className={`${styles.image} pl-4 pr-4`}
-                />
-                <div className={`${styles.price} mt-1 mb-1`}>
-                  <span className="text text_type_digits-default">
-                    {ingredient.calories}
-                  </span>
-                  <CurrencyIcon type="primary" />
-                </div>
-                <p className={`${styles.name} text text_type_main-default`}>
-                  {ingredient.name}
-                </p>
-              </button>
-            </li>
+            <Ingredient
+              key={ingredient._id}
+              ingredient={ingredient}
+              count={ingredientCounters[ingredient._id] ?? 0}
+              onIngredientClick={() => dispatch(setSelectedIngredient(ingredient))}
+            />
           ))}
         </ul>
       </div>
