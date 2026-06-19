@@ -108,7 +108,7 @@ export const BurgerIngredients = (): React.JSX.Element => {
         const rect = el.getBoundingClientRect();
         const dx = rect.left - containerRect.left;
         const dy = rect.top - containerRect.top;
-        const distance = dx * dx + dy * dy; // Squared Euclidean distance
+        const distance = dx * dx + dy * dy;
 
         if (distance < bestDistance) {
           bestDistance = distance;
@@ -129,7 +129,6 @@ export const BurgerIngredients = (): React.JSX.Element => {
       });
     };
 
-    // Initial sync (before user starts interacting).
     onScroll();
     container.addEventListener('scroll', onScroll, { passive: true });
 
