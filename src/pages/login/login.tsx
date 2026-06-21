@@ -4,12 +4,10 @@ import {
   PasswordInput,
 } from '@krgaa/react-developer-burger-ui-components';
 import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
+import { useAppDispatch, useAppSelector } from '@services/hooks';
 import { loginUser } from '@services/user-slice';
-
-import type { AppDispatch, RootState } from '@services/store';
 
 import styles from './login.module.css';
 
@@ -17,13 +15,14 @@ type TLocationState = {
   from?: {
     pathname: string;
   };
+  orderIntent?: boolean;
 };
 
 export const LoginPage = (): React.JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { isLoading } = useSelector((state: RootState) => state.user);
+  const { isLoading } = useAppSelector((state) => state.user);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -31,8 +30,14 @@ export const LoginPage = (): React.JSX.Element => {
     event.preventDefault();
     void dispatch(loginUser({ email, password })).then((result) => {
       if (loginUser.fulfilled.match(result)) {
-        const from = (location.state as TLocationState | null)?.from?.pathname ?? '/';
-        void navigate(from, { replace: true });
+        const state = location.state as TLocationState | null;
+        const from = state?.from?.pathname ?? '/';
+        const orderIntent = state?.orderIntent;
+
+        void navigate(from, {
+          replace: true,
+          state: orderIntent ? { orderIntent: true } : undefined,
+        });
       }
     });
   };

@@ -14,7 +14,6 @@
   overflow: hidden;
 }
 
-.preloader,
 .error {
   display: flex;
   justify-content: center;

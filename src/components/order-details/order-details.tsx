@@ -1,7 +1,6 @@
 import { CheckMarkIcon } from '@krgaa/react-developer-burger-ui-components';
-import { useSelector } from 'react-redux';
 
-import type { RootState } from '@services/store';
+import { useAppSelector } from '@services/hooks';
 
 import styles from './order-details.module.css';
 
@@ -10,7 +9,7 @@ export const OrderDetails = (): React.JSX.Element => {
     number: orderNumber,
     isLoading,
     error,
-  } = useSelector((state: RootState) => state.order);
+  } = useAppSelector((state) => state.order);
 
   if (isLoading) {
     return (

@@ -1,15 +1,13 @@
 import { LogoutIcon } from '@krgaa/react-developer-burger-ui-components';
-import { useDispatch } from 'react-redux';
 import { NavLink, Outlet } from 'react-router-dom';
 
+import { useAppDispatch } from '@services/hooks';
 import { logoutUser } from '@services/user-slice';
-
-import type { AppDispatch } from '@services/store';
 
 import styles from './profile-layout.module.css';
 
 export const ProfileLayout = (): React.JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
 
   const handleLogout = (): void => {
     void dispatch(logoutUser());

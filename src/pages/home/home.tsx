@@ -1,36 +1,52 @@
-import { Preloader } from '@krgaa/react-developer-burger-ui-components';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { BurgerConstructor } from '@components/burger-constructor/burger-constructor';
 import { BurgerIngredients } from '@components/burger-ingredients/burger-ingredients';
 import { Modal } from '@components/modal/modal';
 import { OrderDetails } from '@components/order-details/order-details';
-import { fetchIngredients } from '@services/ingredients-slice';
-import { clearOrder } from '@services/order-slice';
-
-import type { AppDispatch, RootState } from '@services/store';
+import { useAppDispatch, useAppSelector } from '@services/hooks';
+import { clearOrder, createOrder } from '@services/order-slice';
 
 import styles from './home.module.css';
 
+type THomeLocationState = {
+  orderIntent?: boolean;
+};
+
 export const Home = (): React.JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { isLoading, error } = useSelector((state: RootState) => state.ingredients);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { error } = useAppSelector((state) => state.ingredients);
+  const bun = useAppSelector((state) => state.burgerConstructor.bun);
+  const fillingIngredients = useAppSelector(
+    (state) => state.burgerConstructor.ingredients
+  );
   const [isOrderModalOpen, setIsOrderModalOpen] = useState<boolean>(false);
+  const orderIntentProcessed = useRef(false);
 
   useEffect(() => {
-    void dispatch(fetchIngredients());
-  }, [dispatch]);
+    const orderIntent = (location.state as THomeLocationState | null)?.orderIntent;
 
-  if (isLoading) {
-    return (
-      <main className={styles.preloader}>
-        <Preloader />
-      </main>
-    );
-  }
+    if (!orderIntent || !bun || orderIntentProcessed.current) {
+      return;
+    }
+
+    orderIntentProcessed.current = true;
+
+    const orderIngredientIds = [
+      bun._id,
+      ...fillingIngredients.map((ingredient) => ingredient._id),
+      bun._id,
+    ];
+
+    setIsOrderModalOpen(true);
+    void dispatch(createOrder({ ingredients: orderIngredientIds }));
+    void navigate('.', { replace: true, state: null });
+  }, [bun, dispatch, fillingIngredients, location.state, navigate]);
 
   if (error) {
     return (

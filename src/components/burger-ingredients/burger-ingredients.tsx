@@ -1,12 +1,11 @@
 import { Counter, CurrencyIcon, Tab } from '@krgaa/react-developer-burger-ui-components';
 import { useEffect, useRef, useState } from 'react';
 import { useDrag } from 'react-dnd';
-import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+import { useAppSelector } from '@services/hooks';
 import { selectIngredientCounters } from '@services/selectors';
 
-import type { RootState } from '@services/store';
 import type { TIngredient } from '@utils/types';
 
 import styles from './burger-ingredients.module.css';
@@ -54,8 +53,8 @@ export const BurgerIngredients = (): React.JSX.Element => {
   type TBurgerTab = 'bun' | 'main' | 'sauce';
   const navigate = useNavigate();
   const location = useLocation();
-  const ingredients = useSelector((state: RootState) => state.ingredients.items);
-  const ingredientCounters = useSelector(selectIngredientCounters);
+  const ingredients = useAppSelector((state) => state.ingredients.items);
+  const ingredientCounters = useAppSelector(selectIngredientCounters);
   const [currentTab, setCurrentTab] = useState<TBurgerTab>('bun');
   const bunSectionRef = useRef<HTMLHeadingElement>(null);
   const sauceSectionRef = useRef<HTMLHeadingElement>(null);

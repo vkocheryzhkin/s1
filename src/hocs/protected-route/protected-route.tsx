@@ -1,8 +1,7 @@
 import { Preloader } from '@krgaa/react-developer-burger-ui-components';
-import { useSelector } from 'react-redux';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
-import type { RootState } from '@services/store';
+import { useAppSelector } from '@services/hooks';
 
 type TProtectedRouteProps = {
   onlyUnAuth?: boolean;
@@ -11,7 +10,7 @@ type TProtectedRouteProps = {
 export const ProtectedRoute = ({
   onlyUnAuth = false,
 }: TProtectedRouteProps): React.JSX.Element => {
-  const { user, isAuthChecked } = useSelector((state: RootState) => state.user);
+  const { user, isAuthChecked } = useAppSelector((state) => state.user);
   const location = useLocation();
 
   if (!isAuthChecked) {

@@ -2,7 +2,6 @@ import { ProtectedRoute } from '@hocs/protected-route/protected-route';
 import { ResetPasswordRoute } from '@hocs/reset-password-route/reset-password-route';
 import { Preloader } from '@krgaa/react-developer-burger-ui-components';
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useRoutes } from 'react-router-dom';
 
 import { AppHeader } from '@components/app-header/app-header';
@@ -19,11 +18,17 @@ import { ProfileLayout } from '@pages/profile/profile-layout';
 import { ProfileOrdersPage } from '@pages/profile/profile-orders-page';
 import { ProfilePage } from '@pages/profile/profile-page';
 import { RegisterPage } from '@pages/register/register';
+import { useAppDispatch, useAppSelector } from '@services/hooks';
+import { fetchIngredients } from '@services/ingredients-slice';
 import { checkUserAuth } from '@services/user-slice';
 
-import type { AppDispatch, RootState } from '@services/store';
+import type { Location } from 'react-router-dom';
 
 import styles from './app.module.css';
+
+type TLocationState = {
+  background?: Location;
+};
 
 const appRouteConfig = [
   {
@@ -59,19 +64,23 @@ const modalRouteConfig = [
 ];
 
 export const App = (): React.JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const location = useLocation();
-  const background = (location.state as { background?: Location } | null)?.background;
-  const { isAuthChecked } = useSelector((state: RootState) => state.user);
+  const backgroundLocation = (location.state as TLocationState | null)?.background;
+  const { isAuthChecked } = useAppSelector((state) => state.user);
+  const { isLoading: isIngredientsLoading } = useAppSelector(
+    (state) => state.ingredients
+  );
 
-  const mainRoutes = useRoutes(appRouteConfig, background ?? location);
+  const mainRoutes = useRoutes(appRouteConfig, backgroundLocation ?? location);
   const modalRoutes = useRoutes(modalRouteConfig, location);
 
   useEffect(() => {
     void dispatch(checkUserAuth());
+    void dispatch(fetchIngredients());
   }, [dispatch]);
 
-  if (!isAuthChecked) {
+  if (!isAuthChecked || isIngredientsLoading) {
     return (
       <div className={styles.app}>
         <AppHeader />
@@ -86,7 +95,7 @@ export const App = (): React.JSX.Element => {
     <div className={styles.app}>
       <AppHeader />
       {mainRoutes}
-      {background && modalRoutes}
+      {backgroundLocation && modalRoutes}
     </div>
   );
 };

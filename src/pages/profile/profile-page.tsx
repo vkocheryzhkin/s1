@@ -5,18 +5,16 @@ import {
   PasswordInput,
 } from '@krgaa/react-developer-burger-ui-components';
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
+import { useAppDispatch, useAppSelector } from '@services/hooks';
 import { updateUser } from '@services/user-slice';
-
-import type { AppDispatch, RootState } from '@services/store';
 
 import styles from './profile-page.module.css';
 
 export const ProfilePage = (): React.JSX.Element | null => {
-  const dispatch = useDispatch<AppDispatch>();
-  const user = useSelector((state: RootState) => state.user.user);
-  const { isLoading } = useSelector((state: RootState) => state.user);
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.user.user);
+  const { isLoading } = useAppSelector((state) => state.user);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

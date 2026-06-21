@@ -5,18 +5,18 @@ import {
   DragIcon,
 } from '@krgaa/react-developer-burger-ui-components';
 import { useDrag, useDrop } from 'react-dnd';
-import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import {
   addIngredient,
   moveIngredient,
   removeIngredient,
 } from '@services/constructor-slice';
+import { useAppDispatch, useAppSelector } from '@services/hooks';
 import { createOrder } from '@services/order-slice';
 import { selectOrderPrice } from '@services/selectors';
 
-import type { AppDispatch, RootState } from '@services/store';
-import type { TConstructorIngredient } from '@utils/types';
+import type { TConstructorIngredient, TIngredient } from '@utils/types';
 
 import styles from './burger-constructor.module.css';
 
@@ -85,12 +85,15 @@ const ConstructorItem = ({
 export const BurgerConstructor = ({
   onOpenOrderDetails,
 }: TBurgerConstructorProps): React.JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>();
-  const bun = useSelector((state: RootState) => state.burgerConstructor.bun);
-  const fillingIngredients = useSelector(
-    (state: RootState) => state.burgerConstructor.ingredients
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const user = useAppSelector((state) => state.user.user);
+  const bun = useAppSelector((state) => state.burgerConstructor.bun);
+  const fillingIngredients = useAppSelector(
+    (state) => state.burgerConstructor.ingredients
   );
-  const orderPrice = useSelector(selectOrderPrice);
+  const orderPrice = useAppSelector(selectOrderPrice);
   const orderIngredientIds = bun
     ? [bun._id, ...fillingIngredients.map((ingredient) => ingredient._id), bun._id]
     : [];
@@ -100,7 +103,7 @@ export const BurgerConstructor = ({
   const [{ isOver }, dropRef] = useDrop(
     () => ({
       accept: 'ingredient',
-      drop: (ingredient: RootState['ingredients']['items'][number]): void => {
+      drop: (ingredient: TIngredient): void => {
         dispatch(addIngredient(ingredient));
       },
       collect: (monitor): { isOver: boolean } => ({
@@ -109,6 +112,16 @@ export const BurgerConstructor = ({
     }),
     [dispatch]
   );
+
+  const handleOrderClick = (): void => {
+    if (!user) {
+      void navigate('/login', { state: { from: location, orderIntent: true } });
+      return;
+    }
+
+    onOpenOrderDetails();
+    void dispatch(createOrder({ ingredients: orderIngredientIds }));
+  };
 
   return (
     <section
@@ -186,10 +199,7 @@ export const BurgerConstructor = ({
           htmlType="button"
           type="primary"
           size="large"
-          onClick={() => {
-            onOpenOrderDetails();
-            void dispatch(createOrder({ ingredients: orderIngredientIds }));
-          }}
+          onClick={handleOrderClick}
           disabled={!bun}
         >
           Оформить заказ

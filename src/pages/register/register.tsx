@@ -5,18 +5,16 @@ import {
   PasswordInput,
 } from '@krgaa/react-developer-burger-ui-components';
 import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
+import { useAppDispatch, useAppSelector } from '@services/hooks';
 import { registerUser } from '@services/user-slice';
-
-import type { AppDispatch, RootState } from '@services/store';
 
 import styles from './register.module.css';
 
 export const RegisterPage = (): React.JSX.Element => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { isLoading } = useSelector((state: RootState) => state.user);
+  const dispatch = useAppDispatch();
+  const { isLoading } = useAppSelector((state) => state.user);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
