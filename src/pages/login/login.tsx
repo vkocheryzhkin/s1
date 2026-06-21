@@ -3,9 +3,9 @@ import {
   EmailInput,
   PasswordInput,
 } from '@krgaa/react-developer-burger-ui-components';
-import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
+import { useForm } from '@hooks/useForm';
 import { useAppDispatch, useAppSelector } from '@services/hooks';
 import { loginUser } from '@services/user-slice';
 
@@ -23,12 +23,11 @@ export const LoginPage = (): React.JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isLoading } = useAppSelector((state) => state.user);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { values, handleChange } = useForm({ email: '', password: '' });
 
   const handleSubmit = (event: React.FormEvent): void => {
     event.preventDefault();
-    void dispatch(loginUser({ email, password })).then((result) => {
+    void dispatch(loginUser(values)).then((result) => {
       if (loginUser.fulfilled.match(result)) {
         const state = location.state as TLocationState | null;
         const from = state?.from?.pathname ?? '/';
@@ -47,15 +46,17 @@ export const LoginPage = (): React.JSX.Element => {
       <h1 className="text text_type_main-medium mb-6">Вход</h1>
       <form className={styles.form} onSubmit={handleSubmit}>
         <EmailInput
+          name="email"
           placeholder="E-mail"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
+          value={values.email}
+          onChange={handleChange}
           extraClass="mb-6"
         />
         <PasswordInput
+          name="password"
           placeholder="Пароль"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
+          value={values.password}
+          onChange={handleChange}
           extraClass="mb-6"
         />
         <Button htmlType="submit" type="primary" size="medium" extraClass="mb-20">

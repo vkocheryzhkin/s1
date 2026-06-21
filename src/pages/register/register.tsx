@@ -4,9 +4,9 @@ import {
   Input,
   PasswordInput,
 } from '@krgaa/react-developer-burger-ui-components';
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { useForm } from '@hooks/useForm';
 import { useAppDispatch, useAppSelector } from '@services/hooks';
 import { registerUser } from '@services/user-slice';
 
@@ -15,13 +15,11 @@ import styles from './register.module.css';
 export const RegisterPage = (): React.JSX.Element => {
   const dispatch = useAppDispatch();
   const { isLoading } = useAppSelector((state) => state.user);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { values, handleChange } = useForm({ name: '', email: '', password: '' });
 
   const handleSubmit = (event: React.FormEvent): void => {
     event.preventDefault();
-    void dispatch(registerUser({ name, email, password }));
+    void dispatch(registerUser(values));
   };
 
   return (
@@ -30,21 +28,24 @@ export const RegisterPage = (): React.JSX.Element => {
       <form className={styles.form} onSubmit={handleSubmit}>
         <Input
           type="text"
+          name="name"
           placeholder="Имя"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
+          value={values.name}
+          onChange={handleChange}
           extraClass="mb-6"
         />
         <EmailInput
+          name="email"
           placeholder="E-mail"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
+          value={values.email}
+          onChange={handleChange}
           extraClass="mb-6"
         />
         <PasswordInput
+          name="password"
           placeholder="Пароль"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
+          value={values.password}
+          onChange={handleChange}
           extraClass="mb-6"
         />
         <Button htmlType="submit" type="primary" size="medium" extraClass="mb-20">

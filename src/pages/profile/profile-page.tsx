@@ -6,8 +6,11 @@ import {
 } from '@krgaa/react-developer-burger-ui-components';
 import { useEffect, useState } from 'react';
 
+import { useForm } from '@hooks/useForm';
 import { useAppDispatch, useAppSelector } from '@services/hooks';
 import { updateUser } from '@services/user-slice';
+
+import type { ChangeEvent } from 'react';
 
 import styles from './profile-page.module.css';
 
@@ -15,37 +18,41 @@ export const ProfilePage = (): React.JSX.Element | null => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.user.user);
   const { isLoading } = useAppSelector((state) => state.user);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { values, handleChange, setValues } = useForm({
+    name: '',
+    email: '',
+    password: '',
+  });
   const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     if (user) {
-      setName(user.name);
-      setEmail(user.email);
-      setPassword('');
+      setValues({ name: user.name, email: user.email, password: '' });
     }
-  }, [user]);
+  }, [user, setValues]);
 
   if (!user) {
     return null;
   }
 
-  const isChanged = name !== user.name || email !== user.email || password !== '';
+  const isChanged =
+    values.name !== user.name || values.email !== user.email || values.password !== '';
+
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>): void => {
+    handleChange(event);
+    setIsSaved(false);
+  };
 
   const handleCancel = (): void => {
-    setName(user.name);
-    setEmail(user.email);
-    setPassword('');
+    setValues({ name: user.name, email: user.email, password: '' });
     setIsSaved(false);
   };
 
   const handleSave = (event: React.FormEvent): void => {
     event.preventDefault();
-    void dispatch(updateUser({ name, email, password })).then((result) => {
+    void dispatch(updateUser(values)).then((result) => {
       if (updateUser.fulfilled.match(result)) {
-        setPassword('');
+        setValues({ ...values, password: '' });
         setIsSaved(true);
       }
     });
@@ -55,30 +62,24 @@ export const ProfilePage = (): React.JSX.Element | null => {
     <form className={styles.form} onSubmit={handleSave}>
       <Input
         type="text"
+        name="name"
         placeholder="Имя"
-        value={name}
-        onChange={(event) => {
-          setName(event.target.value);
-          setIsSaved(false);
-        }}
+        value={values.name}
+        onChange={handleInputChange}
         extraClass="mb-6"
       />
       <EmailInput
+        name="email"
         placeholder="Логин"
-        value={email}
-        onChange={(event) => {
-          setEmail(event.target.value);
-          setIsSaved(false);
-        }}
+        value={values.email}
+        onChange={handleInputChange}
         extraClass="mb-6"
       />
       <PasswordInput
+        name="password"
         placeholder="Пароль"
-        value={password}
-        onChange={(event) => {
-          setPassword(event.target.value);
-          setIsSaved(false);
-        }}
+        value={values.password}
+        onChange={handleInputChange}
         extraClass="mb-6"
       />
       {isChanged && (

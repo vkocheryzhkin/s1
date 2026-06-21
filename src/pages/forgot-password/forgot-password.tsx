@@ -2,6 +2,7 @@ import { Button, EmailInput } from '@krgaa/react-developer-burger-ui-components'
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+import { useForm } from '@hooks/useForm';
 import { request } from '@utils/request';
 import { setResetPasswordAllowed } from '@utils/token';
 
@@ -11,7 +12,7 @@ import styles from './forgot-password.module.css';
 
 export const ForgotPasswordPage = (): React.JSX.Element => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const { values, handleChange } = useForm({ email: '' });
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = (event: React.FormEvent): void => {
@@ -23,7 +24,7 @@ export const ForgotPasswordPage = (): React.JSX.Element => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email } satisfies TPasswordResetRequest),
+      body: JSON.stringify({ email: values.email } satisfies TPasswordResetRequest),
     })
       .then((data) => {
         if (data.success) {
@@ -41,9 +42,10 @@ export const ForgotPasswordPage = (): React.JSX.Element => {
       <h1 className="text text_type_main-medium mb-6">Восстановление пароля</h1>
       <form className={styles.form} onSubmit={handleSubmit}>
         <EmailInput
+          name="email"
           placeholder="Укажите e-mail"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
+          value={values.email}
+          onChange={handleChange}
           extraClass="mb-6"
         />
         <Button htmlType="submit" type="primary" size="medium" extraClass="mb-20">

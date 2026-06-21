@@ -6,6 +6,7 @@ import {
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+import { useForm } from '@hooks/useForm';
 import { request } from '@utils/request';
 import { clearResetPasswordAllowed } from '@utils/token';
 
@@ -15,8 +16,7 @@ import styles from './reset-password.module.css';
 
 export const ResetPasswordPage = (): React.JSX.Element => {
   const navigate = useNavigate();
-  const [password, setPassword] = useState('');
-  const [token, setToken] = useState('');
+  const { values, handleChange } = useForm({ password: '', token: '' });
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = (event: React.FormEvent): void => {
@@ -28,7 +28,7 @@ export const ResetPasswordPage = (): React.JSX.Element => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ password, token } satisfies TPasswordResetConfirmRequest),
+      body: JSON.stringify(values satisfies TPasswordResetConfirmRequest),
     })
       .then((data) => {
         if (data.success) {
@@ -46,16 +46,18 @@ export const ResetPasswordPage = (): React.JSX.Element => {
       <h1 className="text text_type_main-medium mb-6">Восстановление пароля</h1>
       <form className={styles.form} onSubmit={handleSubmit}>
         <PasswordInput
+          name="password"
           placeholder="Введите новый пароль"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
+          value={values.password}
+          onChange={handleChange}
           extraClass="mb-6"
         />
         <Input
           type="text"
+          name="token"
           placeholder="Введите код из письма"
-          value={token}
-          onChange={(event) => setToken(event.target.value)}
+          value={values.token}
+          onChange={handleChange}
           extraClass="mb-6"
         />
         <Button htmlType="submit" type="primary" size="medium" extraClass="mb-20">
