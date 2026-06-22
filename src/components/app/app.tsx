@@ -14,6 +14,7 @@ import {
 } from '@pages/ingredient-details/ingredient-details-page';
 import { LoginPage } from '@pages/login/login';
 import { NotFound404 } from '@pages/not-found-404/not-found-404';
+import { OrderInfoModal } from '@pages/order-info/order-info-page';
 import { ProfileLayout } from '@pages/profile/profile-layout';
 import { ProfileOrdersPage } from '@pages/profile/profile-orders-page';
 import { ProfilePage } from '@pages/profile/profile-page';
@@ -28,6 +29,29 @@ import styles from './app.module.css';
 
 type TLocationState = {
   background?: Location;
+};
+
+const isFeedOrderRoute = (pathname: string): boolean => /^\/feed\/\d+$/.test(pathname);
+
+const isProfileOrderRoute = (pathname: string): boolean =>
+  /^\/profile\/orders\/\d+$/.test(pathname);
+
+const getOrderModalBackground = (pathname: string): Location | undefined => {
+  if (isFeedOrderRoute(pathname)) {
+    return { pathname: '/feed', search: '', hash: '', state: null, key: 'default' };
+  }
+
+  if (isProfileOrderRoute(pathname)) {
+    return {
+      pathname: '/profile/orders',
+      search: '',
+      hash: '',
+      state: null,
+      key: 'default',
+    };
+  }
+
+  return undefined;
 };
 
 const appRouteConfig = [
@@ -49,6 +73,7 @@ const appRouteConfig = [
         children: [
           { index: true, element: <ProfilePage /> },
           { path: 'orders', element: <ProfileOrdersPage /> },
+          { path: 'orders/:id', element: <ProfileOrdersPage /> },
         ],
       },
     ],
@@ -56,17 +81,22 @@ const appRouteConfig = [
   { path: '/', element: <Home /> },
   { path: '/ingredients/:id', element: <IngredientDetailsPage /> },
   { path: '/feed', element: <FeedPage /> },
+  { path: '/feed/:id', element: <FeedPage /> },
   { path: '*', element: <NotFound404 /> },
 ];
 
 const modalRouteConfig = [
   { path: '/ingredients/:id', element: <IngredientDetailsModal /> },
+  { path: '/feed/:id', element: <OrderInfoModal source="feed" /> },
+  { path: '/profile/orders/:id', element: <OrderInfoModal source="profile" /> },
 ];
 
 export const App = (): React.JSX.Element => {
   const dispatch = useAppDispatch();
   const location = useLocation();
-  const backgroundLocation = (location.state as TLocationState | null)?.background;
+  const stateBackground = (location.state as TLocationState | null)?.background;
+  const orderModalBackground = getOrderModalBackground(location.pathname);
+  const backgroundLocation = stateBackground ?? orderModalBackground;
   const { isAuthChecked } = useAppSelector((state) => state.user);
   const { isLoading: isIngredientsLoading } = useAppSelector(
     (state) => state.ingredients

@@ -1,0 +1,12 @@
+.page {
+  display: flex;
+  justify-content: center;
+  max-width: 640px;
+  margin: 120px auto 0;
+}
+
+.preloader {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+}
