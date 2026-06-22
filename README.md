@@ -36,3 +36,5 @@
 		'@utils': path.resolve(__dirname, './src/utils'),
 	},
 ```
+
+## Notes: already in typescript
