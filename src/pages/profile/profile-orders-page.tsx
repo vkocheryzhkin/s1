@@ -7,6 +7,7 @@ import {
   disconnectProfileOrders,
   selectProfileOrders,
 } from '@services/profile-orders/profile-orders-slice';
+import { getWsAccessToken } from '@utils/token';
 
 import styles from './profile-orders-page.module.css';
 
@@ -15,6 +16,10 @@ export const ProfileOrdersPage = (): React.JSX.Element => {
   const orders = useAppSelector(selectProfileOrders);
 
   useEffect(() => {
+    if (!getWsAccessToken()) {
+      return;
+    }
+
     dispatch(connectProfileOrders());
 
     return (): void => {

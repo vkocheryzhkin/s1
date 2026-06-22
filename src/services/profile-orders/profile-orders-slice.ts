@@ -3,8 +3,9 @@ import { createSlice } from '@reduxjs/toolkit';
 import { socketMiddleware } from '@services/middleware/socket-middleware';
 import { logoutUser } from '@services/user/user-actions';
 import { WS_URL } from '@utils/constants';
+import { refreshAccessToken } from '@utils/fetch-with-refresh';
 import { isValidOrder } from '@utils/order';
-import { getAccessToken } from '@utils/token';
+import { getWsAccessToken } from '@utils/token';
 
 import { fetchProfileOrderByNumber } from './profile-orders-actions';
 
@@ -90,11 +91,20 @@ export const profileOrdersWsActions = {
 };
 
 export const profileOrdersMiddleware = socketMiddleware(
-  () => `${WS_URL}?token=${getAccessToken() ?? ''}`,
+  () => {
+    const token = getWsAccessToken();
+    return token ? `${WS_URL}?token=${token}` : WS_URL;
+  },
   profileOrdersWsActions,
   {
     onInvalidToken: (dispatch) => {
-      void (dispatch as AppDispatch)(logoutUser());
+      void refreshAccessToken()
+        .then(() => {
+          dispatch(connectProfileOrders());
+        })
+        .catch(() => {
+          void (dispatch as AppDispatch)(logoutUser());
+        });
     },
   }
 );
