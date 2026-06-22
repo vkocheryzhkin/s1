@@ -1,0 +1,37 @@
+.container {
+  display: flex;
+  width: 1240px;
+  margin: 120px auto 0;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  width: 320px;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  height: 64px;
+  color: var(--text-inactive-color);
+  text-decoration: none;
+}
+
+.link_active {
+  color: var(--text-primary-color);
+}
+
+.logout {
+  display: flex;
+  align-items: center;
+  height: 64px;
+  color: var(--text-inactive-color);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.content {
+  width: 480px;
+}

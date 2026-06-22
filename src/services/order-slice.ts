@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { request } from '@utils/request';
+import { fetchWithRefresh } from '@utils/fetch-with-refresh';
 
 import type { TCreateOrderRequest, TCreateOrderResponse } from '@utils/types';
 
@@ -20,7 +20,7 @@ export const createOrder = createAsyncThunk<number, TCreateOrderRequest>(
   'order/createOrder',
   async (payload, { rejectWithValue }) => {
     try {
-      const data = await request<TCreateOrderResponse>('/orders', {
+      const data = await fetchWithRefresh<TCreateOrderResponse>('/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

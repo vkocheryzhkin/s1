@@ -1,12 +1,11 @@
 import { Counter, CurrencyIcon, Tab } from '@krgaa/react-developer-burger-ui-components';
 import { useEffect, useRef, useState } from 'react';
 import { useDrag } from 'react-dnd';
-import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-import { setSelectedIngredient } from '@services/selected-ingredient-slice';
+import { useAppSelector } from '@services/hooks';
 import { selectIngredientCounters } from '@services/selectors';
 
-import type { AppDispatch, RootState } from '@services/store';
 import type { TIngredient } from '@utils/types';
 
 import styles from './burger-ingredients.module.css';
@@ -52,9 +51,10 @@ const Ingredient = ({
 
 export const BurgerIngredients = (): React.JSX.Element => {
   type TBurgerTab = 'bun' | 'main' | 'sauce';
-  const dispatch = useDispatch<AppDispatch>();
-  const ingredients = useSelector((state: RootState) => state.ingredients.items);
-  const ingredientCounters = useSelector(selectIngredientCounters);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const ingredients = useAppSelector((state) => state.ingredients.items);
+  const ingredientCounters = useAppSelector(selectIngredientCounters);
   const [currentTab, setCurrentTab] = useState<TBurgerTab>('bun');
   const bunSectionRef = useRef<HTMLHeadingElement>(null);
   const sauceSectionRef = useRef<HTMLHeadingElement>(null);
@@ -77,6 +77,10 @@ export const BurgerIngredients = (): React.JSX.Element => {
   const buns = ingredients.filter((ingredient) => ingredient.type === 'bun');
   const sauces = ingredients.filter((ingredient) => ingredient.type === 'sauce');
   const fillings = ingredients.filter((ingredient) => ingredient.type === 'main');
+
+  const handleIngredientClick = (ingredientId: string): void => {
+    void navigate(`/ingredients/${ingredientId}`, { state: { background: location } });
+  };
 
   useEffect(() => {
     const container = ingredientsContainerRef.current;
@@ -103,7 +107,7 @@ export const BurgerIngredients = (): React.JSX.Element => {
         const rect = el.getBoundingClientRect();
         const dx = rect.left - containerRect.left;
         const dy = rect.top - containerRect.top;
-        const distance = dx * dx + dy * dy; // Squared Euclidean distance
+        const distance = dx * dx + dy * dy;
 
         if (distance < bestDistance) {
           bestDistance = distance;
@@ -124,7 +128,6 @@ export const BurgerIngredients = (): React.JSX.Element => {
       });
     };
 
-    // Initial sync (before user starts interacting).
     onScroll();
     container.addEventListener('scroll', onScroll, { passive: true });
 
@@ -180,7 +183,7 @@ export const BurgerIngredients = (): React.JSX.Element => {
               key={ingredient._id}
               ingredient={ingredient}
               count={ingredientCounters[ingredient._id] ?? 0}
-              onIngredientClick={() => dispatch(setSelectedIngredient(ingredient))}
+              onIngredientClick={() => handleIngredientClick(ingredient._id)}
             />
           ))}
         </ul>
@@ -193,7 +196,7 @@ export const BurgerIngredients = (): React.JSX.Element => {
               key={ingredient._id}
               ingredient={ingredient}
               count={ingredientCounters[ingredient._id] ?? 0}
-              onIngredientClick={() => dispatch(setSelectedIngredient(ingredient))}
+              onIngredientClick={() => handleIngredientClick(ingredient._id)}
             />
           ))}
         </ul>
@@ -206,7 +209,7 @@ export const BurgerIngredients = (): React.JSX.Element => {
               key={ingredient._id}
               ingredient={ingredient}
               count={ingredientCounters[ingredient._id] ?? 0}
-              onIngredientClick={() => dispatch(setSelectedIngredient(ingredient))}
+              onIngredientClick={() => handleIngredientClick(ingredient._id)}
             />
           ))}
         </ul>

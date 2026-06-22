@@ -1,0 +1,21 @@
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 36px;
+}
+
+.action {
+  color: var(--colors-interface-accent);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.message {
+  color: var(--colors-interface-success);
+}

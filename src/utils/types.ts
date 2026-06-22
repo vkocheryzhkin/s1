@@ -33,3 +33,57 @@ export type TCreateOrderResponse = {
     number: number;
   };
 };
+
+export type TUser = {
+  email: string;
+  name: string;
+};
+
+export type TAuthResponse = {
+  success: boolean;
+  accessToken: string;
+  refreshToken: string;
+  user: TUser;
+};
+
+export type TTokenResponse = {
+  success: boolean;
+  accessToken: string;
+  refreshToken: string;
+};
+
+export type TUserResponse = {
+  success: boolean;
+  user: TUser;
+};
+
+export type TRegisterRequest = {
+  email: string;
+  password: string;
+  name: string;
+};
+
+export type TLoginRequest = {
+  email: string;
+  password: string;
+};
+
+export type TUpdateUserRequest = {
+  name: string;
+  email: string;
+  password: string;
+};
+
+export type TMessageResponse = {
+  success: boolean;
+  message: string;
+};
+
+export type TPasswordResetRequest = {
+  email: string;
+};
+
+export type TPasswordResetConfirmRequest = {
+  password: string;
+  token: string;
+};
