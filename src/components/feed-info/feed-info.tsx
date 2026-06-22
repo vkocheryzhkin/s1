@@ -1,4 +1,4 @@
-import { selectFeedOrders } from '@services/feed-slice';
+import { selectFeedOrders } from '@services/feed/feed-slice';
 import { useAppSelector } from '@services/hooks';
 import { splitOrderNumbers } from '@utils/order';
 

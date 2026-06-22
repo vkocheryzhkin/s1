@@ -6,7 +6,7 @@ import {
   connectProfileOrders,
   disconnectProfileOrders,
   selectProfileOrders,
-} from '@services/profile-orders-slice';
+} from '@services/profile-orders/profile-orders-slice';
 
 import styles from './profile-orders-page.module.css';
 

@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 
 import { useForm } from '@hooks/useForm';
 import { useAppDispatch, useAppSelector } from '@services/hooks';
-import { registerUser } from '@services/user-slice';
+import { registerUser } from '@services/user/user-actions';
 
 import styles from './register.module.css';
 

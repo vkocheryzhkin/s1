@@ -1,8 +1,8 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
-import { request } from '@utils/request';
+import { fetchIngredients } from './ingredients-actions';
 
-import type { TIngredient, TIngredientsResponse } from '@utils/types';
+import type { TIngredient } from '@utils/types';
 
 type TIngredientsState = {
   items: TIngredient[];
@@ -15,25 +15,6 @@ const initialState: TIngredientsState = {
   isLoading: false,
   error: null,
 };
-
-export const fetchIngredients = createAsyncThunk<TIngredient[]>(
-  'ingredients/fetchIngredients',
-  async (_, { rejectWithValue }) => {
-    try {
-      const data = await request<TIngredientsResponse>('/ingredients');
-
-      if (!data.success || !Array.isArray(data.data)) {
-        throw new Error('Некорректный ответ от сервера');
-      }
-
-      return data.data;
-    } catch (error) {
-      return rejectWithValue(
-        error instanceof Error ? error.message : 'Не удалось загрузить ингредиенты'
-      );
-    }
-  }
-);
 
 export const ingredientsSlice = createSlice({
   name: 'ingredients',

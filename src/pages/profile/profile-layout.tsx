@@ -2,7 +2,7 @@ import { LogoutIcon } from '@krgaa/react-developer-burger-ui-components';
 import { NavLink, Outlet } from 'react-router-dom';
 
 import { useAppDispatch } from '@services/hooks';
-import { logoutUser } from '@services/user-slice';
+import { logoutUser } from '@services/user/user-actions';
 
 import styles from './profile-layout.module.css';
 

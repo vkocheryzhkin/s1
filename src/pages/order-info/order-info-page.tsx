@@ -13,41 +13,13 @@ type TLocationState = {
   background?: Location;
 };
 
-type TOrderInfoPageProps = {
+type TOrderInfoModalProps = {
   source: 'feed' | 'profile';
-};
-
-const OrderInfoContent = ({ source }: TOrderInfoPageProps): React.JSX.Element | null => {
-  const { order, isLoading } = useOrderDetails(source);
-
-  if (isLoading) {
-    return (
-      <div className={styles.preloader}>
-        <Preloader />
-      </div>
-    );
-  }
-
-  if (!order) {
-    return null;
-  }
-
-  return <OrderInfo order={order} />;
-};
-
-export const OrderInfoPage = ({
-  source,
-}: TOrderInfoPageProps): React.JSX.Element | null => {
-  return (
-    <main className={styles.page}>
-      <OrderInfoContent source={source} />
-    </main>
-  );
 };
 
 export const OrderInfoModal = ({
   source,
-}: TOrderInfoPageProps): React.JSX.Element | null => {
+}: TOrderInfoModalProps): React.JSX.Element | null => {
   const navigate = useNavigate();
   const location = useLocation();
   const backgroundLocation = (location.state as TLocationState | null)?.background;

@@ -9,4 +9,8 @@ export const checkResponse = async <T>(res: Response): Promise<T> => {
 };
 
 export const request = <T>(endpoint: string, options?: RequestInit): Promise<T> =>
-  fetch(`${API_URL}${endpoint}`, options).then(checkResponse<T>);
+  fetch(`${API_URL}${endpoint}`, options)
+    .then(checkResponse<T>)
+    .catch((error: unknown) => {
+      throw error instanceof Error ? error : new Error('Ошибка запроса');
+    });

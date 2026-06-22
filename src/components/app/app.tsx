@@ -20,8 +20,8 @@ import { ProfileOrdersPage } from '@pages/profile/profile-orders-page';
 import { ProfilePage } from '@pages/profile/profile-page';
 import { RegisterPage } from '@pages/register/register';
 import { useAppDispatch, useAppSelector } from '@services/hooks';
-import { fetchIngredients } from '@services/ingredients-slice';
-import { checkUserAuth } from '@services/user-slice';
+import { fetchIngredients } from '@services/ingredients/ingredients-actions';
+import { checkUserAuth } from '@services/user/user-actions';
 
 import type { Location } from 'react-router-dom';
 

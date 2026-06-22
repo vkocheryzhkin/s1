@@ -1,14 +1,14 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
+import { socketMiddleware } from '@services/middleware/socket-middleware';
 import { WS_FEED_URL } from '@utils/constants';
 import { isValidOrder } from '@utils/order';
-import { request } from '@utils/request';
 
-import { socketMiddleware } from './socket-middleware';
+import { fetchFeedOrderByNumber } from './feed-actions';
 
-import type { RootState } from './store';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import type { TOrder, TOrderByNumberResponse, TOrdersResponse } from '@utils/types';
+import type { RootState } from '@services/store';
+import type { TOrder, TOrdersResponse } from '@utils/types';
 
 type TFeedState = {
   orders: TOrder[];
@@ -29,25 +29,6 @@ const initialState: TFeedState = {
   currentOrder: null,
   isCurrentOrderLoading: false,
 };
-
-export const fetchFeedOrderByNumber = createAsyncThunk<TOrder, number>(
-  'feed/fetchOrderByNumber',
-  async (number, { rejectWithValue }) => {
-    try {
-      const data = await request<TOrderByNumberResponse>(`/orders/${number}`);
-
-      if (!data.success || !data.orders[0]) {
-        throw new Error('Заказ не найден');
-      }
-
-      return data.orders[0];
-    } catch (error) {
-      return rejectWithValue(
-        error instanceof Error ? error.message : 'Не удалось загрузить заказ'
-      );
-    }
-  }
-);
 
 export const feedSlice = createSlice({
   name: 'feed',

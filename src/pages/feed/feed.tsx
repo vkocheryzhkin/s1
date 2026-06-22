@@ -2,7 +2,11 @@ import { useEffect } from 'react';
 
 import { FeedInfo } from '@components/feed-info/feed-info';
 import { OrderCard } from '@components/order-card/order-card';
-import { connectFeed, disconnectFeed, selectFeedOrders } from '@services/feed-slice';
+import {
+  connectFeed,
+  disconnectFeed,
+  selectFeedOrders,
+} from '@services/feed/feed-slice';
 import { useAppDispatch, useAppSelector } from '@services/hooks';
 
 import styles from './feed.module.css';

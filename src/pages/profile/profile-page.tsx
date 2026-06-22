@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 
 import { useForm } from '@hooks/useForm';
 import { useAppDispatch, useAppSelector } from '@services/hooks';
-import { updateUser } from '@services/user-slice';
+import { updateUser } from '@services/user/user-actions';
 
 import type { ChangeEvent } from 'react';
 

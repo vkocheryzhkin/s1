@@ -1,17 +1,14 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
-import {
-  clearFeedCurrentOrder,
-  fetchFeedOrderByNumber,
-  selectFeedOrders,
-} from '@services/feed-slice';
+import { fetchFeedOrderByNumber } from '@services/feed/feed-actions';
+import { clearFeedCurrentOrder, selectFeedOrders } from '@services/feed/feed-slice';
 import { useAppDispatch, useAppSelector } from '@services/hooks';
+import { fetchProfileOrderByNumber } from '@services/profile-orders/profile-orders-actions';
 import {
   clearProfileCurrentOrder,
-  fetchProfileOrderByNumber,
   selectProfileOrders,
-} from '@services/profile-orders-slice';
+} from '@services/profile-orders/profile-orders-slice';
 import { isValidOrder } from '@utils/order';
 
 import type { TOrder } from '@utils/types';

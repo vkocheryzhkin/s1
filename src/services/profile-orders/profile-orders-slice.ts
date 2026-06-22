@@ -1,16 +1,16 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
+import { socketMiddleware } from '@services/middleware/socket-middleware';
+import { logoutUser } from '@services/user/user-actions';
 import { WS_URL } from '@utils/constants';
 import { isValidOrder } from '@utils/order';
-import { request } from '@utils/request';
 import { getAccessToken } from '@utils/token';
 
-import { socketMiddleware } from './socket-middleware';
-import { logoutUser } from './user-slice';
+import { fetchProfileOrderByNumber } from './profile-orders-actions';
 
-import type { AppDispatch, RootState } from './store';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import type { TOrder, TOrderByNumberResponse, TOrdersResponse } from '@utils/types';
+import type { AppDispatch, RootState } from '@services/store';
+import type { TOrder, TOrdersResponse } from '@utils/types';
 
 type TProfileOrdersState = {
   orders: TOrder[];
@@ -31,25 +31,6 @@ const initialState: TProfileOrdersState = {
   currentOrder: null,
   isCurrentOrderLoading: false,
 };
-
-export const fetchProfileOrderByNumber = createAsyncThunk<TOrder, number>(
-  'profileOrders/fetchOrderByNumber',
-  async (number, { rejectWithValue }) => {
-    try {
-      const data = await request<TOrderByNumberResponse>(`/orders/${number}`);
-
-      if (!data.success || !data.orders[0]) {
-        throw new Error('Заказ не найден');
-      }
-
-      return data.orders[0];
-    } catch (error) {
-      return rejectWithValue(
-        error instanceof Error ? error.message : 'Не удалось загрузить заказ'
-      );
-    }
-  }
-);
 
 export const profileOrdersSlice = createSlice({
   name: 'profileOrders',
