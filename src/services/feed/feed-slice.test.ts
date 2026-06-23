@@ -4,6 +4,7 @@ import {
   connectFeed,
   disconnectFeed,
   feedSlice,
+  initialState,
 } from './feed-slice';
 
 import type { TOrder, TOrdersResponse } from '@utils/types';
@@ -29,22 +30,11 @@ const mockOrdersResponse: TOrdersResponse = {
 
 describe('feedSlice', () => {
   it('should return initial state', () => {
-    expect(reducer(undefined, { type: 'unknown' })).toEqual({
-      orders: [],
-      total: 0,
-      totalToday: 0,
-      isLoading: false,
-      error: null,
-      currentOrder: null,
-      isCurrentOrderLoading: false,
-    });
+    expect(reducer(undefined, { type: 'unknown' })).toEqual(initialState);
   });
 
   it('should handle wsConnecting', () => {
-    const state = reducer(
-      { ...reducer(undefined, { type: 'unknown' }), error: 'old error' },
-      connectFeed()
-    );
+    const state = reducer({ ...initialState, error: 'old error' }, connectFeed());
 
     expect(state.isLoading).toBe(true);
     expect(state.error).toBeNull();
@@ -52,7 +42,7 @@ describe('feedSlice', () => {
 
   it('should handle wsOpen', () => {
     const state = reducer(
-      { ...reducer(undefined, { type: 'unknown' }), isLoading: true },
+      { ...initialState, isLoading: true },
       feedSlice.actions.wsOpen()
     );
 
@@ -61,7 +51,7 @@ describe('feedSlice', () => {
 
   it('should handle wsClose', () => {
     const state = reducer(
-      { ...reducer(undefined, { type: 'unknown' }), isLoading: true },
+      { ...initialState, isLoading: true },
       feedSlice.actions.wsClose()
     );
 
@@ -69,14 +59,14 @@ describe('feedSlice', () => {
   });
 
   it('should handle wsError', () => {
-    const state = reducer(undefined, feedSlice.actions.wsError());
+    const state = reducer(initialState, feedSlice.actions.wsError());
 
     expect(state.error).toBe('Ошибка соединения с сервером');
     expect(state.isLoading).toBe(false);
   });
 
   it('should handle wsMessage with success response', () => {
-    const state = reducer(undefined, feedSlice.actions.wsMessage(mockOrdersResponse));
+    const state = reducer(initialState, feedSlice.actions.wsMessage(mockOrdersResponse));
 
     expect(state.orders).toEqual(mockOrdersResponse.orders);
     expect(state.total).toBe(100);
@@ -84,14 +74,14 @@ describe('feedSlice', () => {
   });
 
   it('should ignore wsMessage when success is false', () => {
-    const initialState = {
-      ...reducer(undefined, { type: 'unknown' }),
+    const stateWithOrders = {
+      ...initialState,
       orders: [mockOrder],
       total: 50,
       totalToday: 5,
     };
     const state = reducer(
-      initialState,
+      stateWithOrders,
       feedSlice.actions.wsMessage({
         success: false,
         orders: [],
@@ -100,24 +90,24 @@ describe('feedSlice', () => {
       })
     );
 
-    expect(state.orders).toEqual(initialState.orders);
+    expect(state.orders).toEqual(stateWithOrders.orders);
     expect(state.total).toBe(50);
     expect(state.totalToday).toBe(5);
   });
 
   it('should handle wsDisconnect', () => {
-    const initialState = reducer(
-      undefined,
+    const stateWithOrders = reducer(
+      initialState,
       feedSlice.actions.wsMessage(mockOrdersResponse)
     );
-    const state = reducer(initialState, disconnectFeed());
+    const state = reducer(stateWithOrders, disconnectFeed());
 
-    expect(state).toEqual(initialState);
+    expect(state).toEqual(stateWithOrders);
   });
 
   it('should handle clearCurrentOrder', () => {
     const state = reducer(
-      { ...reducer(undefined, { type: 'unknown' }), currentOrder: mockOrder },
+      { ...initialState, currentOrder: mockOrder },
       clearFeedCurrentOrder()
     );
 
@@ -125,17 +115,14 @@ describe('feedSlice', () => {
   });
 
   it('should handle fetchFeedOrderByNumber.pending', () => {
-    const state = reducer(
-      reducer(undefined, { type: 'unknown' }),
-      fetchFeedOrderByNumber.pending('', 12345)
-    );
+    const state = reducer(initialState, fetchFeedOrderByNumber.pending('', 12345));
 
     expect(state.isCurrentOrderLoading).toBe(true);
   });
 
   it('should handle fetchFeedOrderByNumber.fulfilled', () => {
     const state = reducer(
-      { ...reducer(undefined, { type: 'unknown' }), isCurrentOrderLoading: true },
+      { ...initialState, isCurrentOrderLoading: true },
       fetchFeedOrderByNumber.fulfilled(mockOrder, '', 12345)
     );
 
@@ -146,7 +133,7 @@ describe('feedSlice', () => {
   it('should handle fetchFeedOrderByNumber.rejected', () => {
     const state = reducer(
       {
-        ...reducer(undefined, { type: 'unknown' }),
+        ...initialState,
         isCurrentOrderLoading: true,
         currentOrder: mockOrder,
       },

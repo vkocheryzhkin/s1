@@ -5,7 +5,7 @@ import {
   registerUser,
   updateUser,
 } from './user-actions';
-import { clearUserError, userSlice } from './user-slice';
+import { clearUserError, initialState, userSlice } from './user-slice';
 
 import type { TUser } from '@utils/types';
 
@@ -18,20 +18,15 @@ const mockUser: TUser = {
 
 describe('userSlice', () => {
   it('should return initial state', () => {
-    expect(reducer(undefined, { type: 'unknown' })).toEqual({
-      user: null,
-      isAuthChecked: false,
-      isLoading: false,
-      error: null,
-    });
+    expect(reducer(undefined, { type: 'unknown' })).toEqual(initialState);
   });
 
   it('should handle clearUserError', () => {
     const state = reducer(
       {
+        ...initialState,
         user: mockUser,
         isAuthChecked: true,
-        isLoading: false,
         error: 'Some error',
       },
       clearUserError()
@@ -42,14 +37,14 @@ describe('userSlice', () => {
 
   describe('registerUser', () => {
     it('should handle pending', () => {
-      const state = reducer(undefined, registerUser.pending('', mockUser));
+      const state = reducer(initialState, registerUser.pending('', mockUser));
       expect(state.isLoading).toBe(true);
       expect(state.error).toBeNull();
     });
 
     it('should handle fulfilled', () => {
       const state = reducer(
-        { user: null, isAuthChecked: false, isLoading: true, error: null },
+        { ...initialState, isLoading: true },
         registerUser.fulfilled(mockUser, '', mockUser)
       );
 
@@ -59,7 +54,7 @@ describe('userSlice', () => {
 
     it('should handle rejected with payload', () => {
       const state = reducer(
-        { user: null, isAuthChecked: false, isLoading: true, error: null },
+        { ...initialState, isLoading: true },
         registerUser.rejected(null, '', mockUser, 'Register failed')
       );
 
@@ -69,7 +64,7 @@ describe('userSlice', () => {
 
     it('should handle rejected without payload', () => {
       const state = reducer(
-        { user: null, isAuthChecked: false, isLoading: true, error: null },
+        { ...initialState, isLoading: true },
         registerUser.rejected(null, '', mockUser)
       );
 
@@ -79,14 +74,14 @@ describe('userSlice', () => {
 
   describe('loginUser', () => {
     it('should handle pending', () => {
-      const state = reducer(undefined, loginUser.pending('', mockUser));
+      const state = reducer(initialState, loginUser.pending('', mockUser));
       expect(state.isLoading).toBe(true);
       expect(state.error).toBeNull();
     });
 
     it('should handle fulfilled', () => {
       const state = reducer(
-        { user: null, isAuthChecked: false, isLoading: true, error: null },
+        { ...initialState, isLoading: true },
         loginUser.fulfilled(mockUser, '', mockUser)
       );
 
@@ -96,7 +91,7 @@ describe('userSlice', () => {
 
     it('should handle rejected with payload', () => {
       const state = reducer(
-        { user: null, isAuthChecked: false, isLoading: true, error: null },
+        { ...initialState, isLoading: true },
         loginUser.rejected(null, '', mockUser, 'Login failed')
       );
 
@@ -105,7 +100,7 @@ describe('userSlice', () => {
 
     it('should handle rejected without payload', () => {
       const state = reducer(
-        { user: null, isAuthChecked: false, isLoading: true, error: null },
+        { ...initialState, isLoading: true },
         loginUser.rejected(null, '', mockUser)
       );
 
@@ -115,14 +110,14 @@ describe('userSlice', () => {
 
   describe('logoutUser', () => {
     it('should handle pending', () => {
-      const state = reducer(undefined, logoutUser.pending('', undefined));
+      const state = reducer(initialState, logoutUser.pending('', undefined));
       expect(state.isLoading).toBe(true);
       expect(state.error).toBeNull();
     });
 
     it('should handle fulfilled', () => {
       const state = reducer(
-        { user: mockUser, isAuthChecked: true, isLoading: true, error: null },
+        { ...initialState, user: mockUser, isAuthChecked: true, isLoading: true },
         logoutUser.fulfilled(undefined, '', undefined)
       );
 
@@ -132,7 +127,7 @@ describe('userSlice', () => {
 
     it('should handle rejected', () => {
       const state = reducer(
-        { user: mockUser, isAuthChecked: true, isLoading: true, error: null },
+        { ...initialState, user: mockUser, isAuthChecked: true, isLoading: true },
         logoutUser.rejected(null, '', undefined, 'Logout failed')
       );
 
@@ -144,7 +139,7 @@ describe('userSlice', () => {
   describe('checkUserAuth', () => {
     it('should handle pending', () => {
       const state = reducer(
-        { user: mockUser, isAuthChecked: true, isLoading: false, error: null },
+        { ...initialState, user: mockUser, isAuthChecked: true },
         checkUserAuth.pending('', undefined)
       );
 
@@ -153,7 +148,7 @@ describe('userSlice', () => {
 
     it('should handle fulfilled with user', () => {
       const state = reducer(
-        { user: null, isAuthChecked: false, isLoading: false, error: null },
+        initialState,
         checkUserAuth.fulfilled(mockUser, '', undefined)
       );
 
@@ -163,7 +158,7 @@ describe('userSlice', () => {
 
     it('should handle fulfilled with null', () => {
       const state = reducer(
-        { user: mockUser, isAuthChecked: false, isLoading: false, error: null },
+        { ...initialState, user: mockUser },
         checkUserAuth.fulfilled(null, '', undefined)
       );
 
@@ -173,7 +168,7 @@ describe('userSlice', () => {
 
     it('should handle rejected', () => {
       const state = reducer(
-        { user: mockUser, isAuthChecked: false, isLoading: false, error: null },
+        { ...initialState, user: mockUser },
         checkUserAuth.rejected(null, '', undefined)
       );
 
@@ -190,7 +185,7 @@ describe('userSlice', () => {
     };
 
     it('should handle pending', () => {
-      const state = reducer(undefined, updateUser.pending('', updatePayload));
+      const state = reducer(initialState, updateUser.pending('', updatePayload));
       expect(state.isLoading).toBe(true);
       expect(state.error).toBeNull();
     });
@@ -198,7 +193,7 @@ describe('userSlice', () => {
     it('should handle fulfilled', () => {
       const updatedUser = { name: 'Updated', email: 'updated@test.com' };
       const state = reducer(
-        { user: mockUser, isAuthChecked: true, isLoading: true, error: null },
+        { ...initialState, user: mockUser, isAuthChecked: true, isLoading: true },
         updateUser.fulfilled(updatedUser, '', updatePayload)
       );
 
@@ -208,7 +203,7 @@ describe('userSlice', () => {
 
     it('should handle rejected with payload', () => {
       const state = reducer(
-        { user: mockUser, isAuthChecked: true, isLoading: true, error: null },
+        { ...initialState, user: mockUser, isAuthChecked: true, isLoading: true },
         updateUser.rejected(null, '', updatePayload, 'Update failed')
       );
 
@@ -217,7 +212,7 @@ describe('userSlice', () => {
 
     it('should handle rejected without payload', () => {
       const state = reducer(
-        { user: mockUser, isAuthChecked: true, isLoading: true, error: null },
+        { ...initialState, user: mockUser, isAuthChecked: true, isLoading: true },
         updateUser.rejected(null, '', updatePayload)
       );
 

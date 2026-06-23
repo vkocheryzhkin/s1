@@ -3,6 +3,7 @@ import {
   clearProfileCurrentOrder,
   connectProfileOrders,
   disconnectProfileOrders,
+  initialState,
   profileOrdersSlice,
 } from './profile-orders-slice';
 
@@ -29,20 +30,12 @@ const mockOrdersResponse: TOrdersResponse = {
 
 describe('profileOrdersSlice', () => {
   it('should return initial state', () => {
-    expect(reducer(undefined, { type: 'unknown' })).toEqual({
-      orders: [],
-      total: 0,
-      totalToday: 0,
-      isLoading: false,
-      error: null,
-      currentOrder: null,
-      isCurrentOrderLoading: false,
-    });
+    expect(reducer(undefined, { type: 'unknown' })).toEqual(initialState);
   });
 
   it('should handle wsConnecting', () => {
     const state = reducer(
-      { ...reducer(undefined, { type: 'unknown' }), error: 'old error' },
+      { ...initialState, error: 'old error' },
       connectProfileOrders()
     );
 
@@ -52,7 +45,7 @@ describe('profileOrdersSlice', () => {
 
   it('should handle wsOpen', () => {
     const state = reducer(
-      { ...reducer(undefined, { type: 'unknown' }), isLoading: true },
+      { ...initialState, isLoading: true },
       profileOrdersSlice.actions.wsOpen()
     );
 
@@ -61,7 +54,7 @@ describe('profileOrdersSlice', () => {
 
   it('should handle wsClose', () => {
     const state = reducer(
-      { ...reducer(undefined, { type: 'unknown' }), isLoading: true },
+      { ...initialState, isLoading: true },
       profileOrdersSlice.actions.wsClose()
     );
 
@@ -69,7 +62,7 @@ describe('profileOrdersSlice', () => {
   });
 
   it('should handle wsError', () => {
-    const state = reducer(undefined, profileOrdersSlice.actions.wsError());
+    const state = reducer(initialState, profileOrdersSlice.actions.wsError());
 
     expect(state.error).toBe('Ошибка соединения с сервером');
     expect(state.isLoading).toBe(false);
@@ -77,7 +70,7 @@ describe('profileOrdersSlice', () => {
 
   it('should handle wsMessage with success response', () => {
     const state = reducer(
-      undefined,
+      initialState,
       profileOrdersSlice.actions.wsMessage(mockOrdersResponse)
     );
 
@@ -87,14 +80,14 @@ describe('profileOrdersSlice', () => {
   });
 
   it('should ignore wsMessage when success is false', () => {
-    const initialState = {
-      ...reducer(undefined, { type: 'unknown' }),
+    const stateWithOrders = {
+      ...initialState,
       orders: [mockOrder],
       total: 50,
       totalToday: 5,
     };
     const state = reducer(
-      initialState,
+      stateWithOrders,
       profileOrdersSlice.actions.wsMessage({
         success: false,
         orders: [],
@@ -103,24 +96,24 @@ describe('profileOrdersSlice', () => {
       })
     );
 
-    expect(state.orders).toEqual(initialState.orders);
+    expect(state.orders).toEqual(stateWithOrders.orders);
     expect(state.total).toBe(50);
     expect(state.totalToday).toBe(5);
   });
 
   it('should handle wsDisconnect', () => {
-    const initialState = reducer(
-      undefined,
+    const stateWithOrders = reducer(
+      initialState,
       profileOrdersSlice.actions.wsMessage(mockOrdersResponse)
     );
-    const state = reducer(initialState, disconnectProfileOrders());
+    const state = reducer(stateWithOrders, disconnectProfileOrders());
 
-    expect(state).toEqual(initialState);
+    expect(state).toEqual(stateWithOrders);
   });
 
   it('should handle clearCurrentOrder', () => {
     const state = reducer(
-      { ...reducer(undefined, { type: 'unknown' }), currentOrder: mockOrder },
+      { ...initialState, currentOrder: mockOrder },
       clearProfileCurrentOrder()
     );
 
@@ -128,17 +121,14 @@ describe('profileOrdersSlice', () => {
   });
 
   it('should handle fetchProfileOrderByNumber.pending', () => {
-    const state = reducer(
-      reducer(undefined, { type: 'unknown' }),
-      fetchProfileOrderByNumber.pending('', 54321)
-    );
+    const state = reducer(initialState, fetchProfileOrderByNumber.pending('', 54321));
 
     expect(state.isCurrentOrderLoading).toBe(true);
   });
 
   it('should handle fetchProfileOrderByNumber.fulfilled', () => {
     const state = reducer(
-      { ...reducer(undefined, { type: 'unknown' }), isCurrentOrderLoading: true },
+      { ...initialState, isCurrentOrderLoading: true },
       fetchProfileOrderByNumber.fulfilled(mockOrder, '', 54321)
     );
 
@@ -149,7 +139,7 @@ describe('profileOrdersSlice', () => {
   it('should handle fetchProfileOrderByNumber.rejected', () => {
     const state = reducer(
       {
-        ...reducer(undefined, { type: 'unknown' }),
+        ...initialState,
         isCurrentOrderLoading: true,
         currentOrder: mockOrder,
       },

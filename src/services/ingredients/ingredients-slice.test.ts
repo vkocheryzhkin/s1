@@ -1,5 +1,5 @@
 import { fetchIngredients } from './ingredients-actions';
-import { ingredientsSlice } from './ingredients-slice';
+import { initialState, ingredientsSlice } from './ingredients-slice';
 
 import type { TIngredient } from '@utils/types';
 
@@ -24,16 +24,12 @@ const mockIngredients: TIngredient[] = [
 
 describe('ingredientsSlice', () => {
   it('should return initial state', () => {
-    expect(reducer(undefined, { type: 'unknown' })).toEqual({
-      items: [],
-      isLoading: false,
-      error: null,
-    });
+    expect(reducer(undefined, { type: 'unknown' })).toEqual(initialState);
   });
 
   it('should handle fetchIngredients.pending', () => {
     const state = reducer(
-      { items: mockIngredients, isLoading: false, error: 'old error' },
+      { ...initialState, items: mockIngredients, error: 'old error' },
       fetchIngredients.pending('', undefined)
     );
 
@@ -43,7 +39,7 @@ describe('ingredientsSlice', () => {
 
   it('should handle fetchIngredients.fulfilled', () => {
     const state = reducer(
-      { items: [], isLoading: true, error: null },
+      { ...initialState, isLoading: true },
       fetchIngredients.fulfilled(mockIngredients, '', undefined)
     );
 
@@ -53,7 +49,7 @@ describe('ingredientsSlice', () => {
 
   it('should handle fetchIngredients.rejected with payload', () => {
     const state = reducer(
-      { items: [], isLoading: true, error: null },
+      { ...initialState, isLoading: true },
       fetchIngredients.rejected(null, '', undefined, 'Custom error')
     );
 
@@ -63,7 +59,7 @@ describe('ingredientsSlice', () => {
 
   it('should handle fetchIngredients.rejected without payload', () => {
     const state = reducer(
-      { items: [], isLoading: true, error: null },
+      { ...initialState, isLoading: true },
       fetchIngredients.rejected(null, '', undefined)
     );
 

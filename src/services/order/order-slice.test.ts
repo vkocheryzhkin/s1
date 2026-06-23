@@ -1,15 +1,11 @@
 import { createOrder } from './order-actions';
-import { clearOrder, orderSlice } from './order-slice';
+import { clearOrder, initialState, orderSlice } from './order-slice';
 
 const reducer = orderSlice.reducer;
 
 describe('orderSlice', () => {
   it('should return initial state', () => {
-    expect(reducer(undefined, { type: 'unknown' })).toEqual({
-      number: null,
-      isLoading: false,
-      error: null,
-    });
+    expect(reducer(undefined, { type: 'unknown' })).toEqual(initialState);
   });
 
   it('should handle clearOrder', () => {
@@ -18,16 +14,12 @@ describe('orderSlice', () => {
       clearOrder()
     );
 
-    expect(state).toEqual({
-      number: null,
-      isLoading: false,
-      error: null,
-    });
+    expect(state).toEqual(initialState);
   });
 
   it('should handle createOrder.pending', () => {
     const state = reducer(
-      { number: 1, isLoading: false, error: 'old error' },
+      { ...initialState, number: 1, error: 'old error' },
       createOrder.pending('', { ingredients: ['id'] })
     );
 
@@ -37,7 +29,7 @@ describe('orderSlice', () => {
 
   it('should handle createOrder.fulfilled', () => {
     const state = reducer(
-      { number: null, isLoading: true, error: null },
+      { ...initialState, isLoading: true },
       createOrder.fulfilled(98765, '', { ingredients: ['id'] })
     );
 
@@ -47,7 +39,7 @@ describe('orderSlice', () => {
 
   it('should handle createOrder.rejected with payload', () => {
     const state = reducer(
-      { number: null, isLoading: true, error: null },
+      { ...initialState, isLoading: true },
       createOrder.rejected(null, '', { ingredients: ['id'] }, 'Order failed')
     );
 
@@ -57,7 +49,7 @@ describe('orderSlice', () => {
 
   it('should handle createOrder.rejected without payload', () => {
     const state = reducer(
-      { number: null, isLoading: true, error: null },
+      { ...initialState, isLoading: true },
       createOrder.rejected(null, '', { ingredients: ['id'] })
     );
 

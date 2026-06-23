@@ -1,6 +1,7 @@
 import {
   addIngredient,
   constructorSlice,
+  initialState,
   moveIngredient,
   removeIngredient,
 } from './constructor-slice';
@@ -35,16 +36,13 @@ const createConstructorIngredient = (
 
 describe('constructorSlice', () => {
   it('should return initial state', () => {
-    expect(reducer(undefined, { type: 'unknown' })).toEqual({
-      bun: null,
-      ingredients: [],
-    });
+    expect(reducer(undefined, { type: 'unknown' })).toEqual(initialState);
   });
 
   describe('addIngredient', () => {
     it('should set bun when ingredient type is bun', () => {
       const bun = createIngredient({ _id: 'bun-id', type: 'bun', name: 'Bun' });
-      const state = reducer(undefined, addIngredient(bun));
+      const state = reducer(initialState, addIngredient(bun));
 
       expect(state.bun).toMatchObject({ _id: 'bun-id', type: 'bun' });
       expect(state.bun?.uuid).toBeTruthy();
@@ -54,7 +52,7 @@ describe('constructorSlice', () => {
     it('should replace existing bun', () => {
       const firstBun = createIngredient({ _id: 'bun-1', type: 'bun' });
       const secondBun = createIngredient({ _id: 'bun-2', type: 'bun' });
-      const stateWithFirstBun = reducer(undefined, addIngredient(firstBun));
+      const stateWithFirstBun = reducer(initialState, addIngredient(firstBun));
       const state = reducer(stateWithFirstBun, addIngredient(secondBun));
 
       expect(state.bun?._id).toBe('bun-2');
@@ -62,7 +60,7 @@ describe('constructorSlice', () => {
 
     it('should add filling ingredient to list', () => {
       const filling = createIngredient({ _id: 'main-id', type: 'main' });
-      const state = reducer(undefined, addIngredient(filling));
+      const state = reducer(initialState, addIngredient(filling));
 
       expect(state.bun).toBeNull();
       expect(state.ingredients).toHaveLength(1);
@@ -75,11 +73,11 @@ describe('constructorSlice', () => {
     it('should remove ingredient by uuid', () => {
       const first = createConstructorIngredient({ uuid: 'uuid-1', _id: 'first' });
       const second = createConstructorIngredient({ uuid: 'uuid-2', _id: 'second' });
-      const initialState = {
-        bun: null,
+      const stateWithIngredients = {
+        ...initialState,
         ingredients: [first, second],
       };
-      const state = reducer(initialState, removeIngredient('uuid-1'));
+      const state = reducer(stateWithIngredients, removeIngredient('uuid-1'));
 
       expect(state.ingredients).toEqual([second]);
     });
@@ -91,10 +89,13 @@ describe('constructorSlice', () => {
       createConstructorIngredient({ uuid: 'uuid-2', name: 'Second' }),
       createConstructorIngredient({ uuid: 'uuid-3', name: 'Third' }),
     ];
-    const initialState = { bun: null, ingredients };
+    const stateWithIngredients = { ...initialState, ingredients };
 
     it('should move ingredient from one index to another', () => {
-      const state = reducer(initialState, moveIngredient({ fromIndex: 0, toIndex: 2 }));
+      const state = reducer(
+        stateWithIngredients,
+        moveIngredient({ fromIndex: 0, toIndex: 2 })
+      );
 
       expect(state.ingredients.map((item) => item.uuid)).toEqual([
         'uuid-2',
@@ -113,8 +114,8 @@ describe('constructorSlice', () => {
       ];
 
       invalidMoves.forEach((payload) => {
-        const state = reducer(initialState, moveIngredient(payload));
-        expect(state.ingredients).toEqual(initialState.ingredients);
+        const state = reducer(stateWithIngredients, moveIngredient(payload));
+        expect(state.ingredients).toEqual(stateWithIngredients.ingredients);
       });
     });
   });
