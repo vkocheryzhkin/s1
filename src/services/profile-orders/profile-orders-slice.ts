@@ -23,7 +23,7 @@ type TProfileOrdersState = {
   isCurrentOrderLoading: boolean;
 };
 
-const initialState: TProfileOrdersState = {
+export const initialState: TProfileOrdersState = {
   orders: [],
   total: 0,
   totalToday: 0,
