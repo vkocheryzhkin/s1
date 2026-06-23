@@ -11,9 +11,9 @@ import {
   addIngredient,
   moveIngredient,
   removeIngredient,
-} from '@services/constructor-slice';
+} from '@services/constructor/constructor-slice';
 import { useAppDispatch, useAppSelector } from '@services/hooks';
-import { createOrder } from '@services/order-slice';
+import { createOrder } from '@services/order/order-actions';
 import { selectOrderPrice } from '@services/selectors';
 
 import type { TConstructorIngredient, TIngredient } from '@utils/types';

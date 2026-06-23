@@ -7,7 +7,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { useForm } from '@hooks/useForm';
 import { useAppDispatch, useAppSelector } from '@services/hooks';
-import { loginUser } from '@services/user-slice';
+import { loginUser } from '@services/user/user-actions';
 
 import styles from './login.module.css';
 

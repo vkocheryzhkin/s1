@@ -1,0 +1,12 @@
+.done {
+  color: #0cc;
+}
+
+.pending,
+.created {
+  color: var(--text-primary-color);
+}
+
+.status {
+  margin: 0;
+}

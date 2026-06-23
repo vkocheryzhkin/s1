@@ -5,6 +5,16 @@ export const RESET_PASSWORD_FLAG = 'passwordResetAllowed';
 export const getAccessToken = (): string | null =>
   localStorage.getItem(ACCESS_TOKEN_KEY);
 
+export const getWsAccessToken = (): string | null => {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    return null;
+  }
+
+  return accessToken.replace(/^Bearer\s+/i, '');
+};
+
 export const getRefreshToken = (): string | null =>
   localStorage.getItem(REFRESH_TOKEN_KEY);
 

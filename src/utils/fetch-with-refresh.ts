@@ -4,7 +4,7 @@ import { clearTokens, getAccessToken, getRefreshToken, setTokens } from './token
 
 import type { TTokenResponse } from './types';
 
-const refreshTokenRequest = async (): Promise<TTokenResponse> => {
+export const refreshAccessToken = async (): Promise<TTokenResponse> => {
   const refreshToken = getRefreshToken();
 
   if (!refreshToken) {
@@ -59,7 +59,7 @@ export const fetchWithRefresh = async <T>(
   }
 
   if (errorData.message === 'jwt expired') {
-    await refreshTokenRequest();
+    await refreshAccessToken();
 
     const retryResponse = await fetch(`${API_URL}${endpoint}`, {
       ...options,

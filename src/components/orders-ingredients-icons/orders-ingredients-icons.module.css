@@ -1,0 +1,43 @@
+.list {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  margin-left: -20px;
+}
+
+.item:first-child {
+  margin-left: 0;
+}
+
+.border {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--background);
+  border: 2px solid rgb(128 128 255 / 40%);
+  border-radius: 50%;
+}
+
+.image {
+  width: 112%;
+  height: auto;
+  object-fit: cover;
+}
+
+.more .border {
+  background: rgb(28 28 33 / 60%);
+}
+
+.count {
+  color: var(--text-inactive-color);
+}

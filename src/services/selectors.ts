@@ -1,6 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import type { RootState } from './store';
+import type { RootState } from '@services/store';
 import type { TConstructorIngredient, TIngredient } from '@utils/types';
 
 const selectConstructorBun = (state: RootState): TIngredient | null =>

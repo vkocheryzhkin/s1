@@ -1,0 +1,14 @@
+.root {
+  width: 100%;
+}
+
+.description {
+  max-width: 280px;
+}
+
+.orders {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 320px);
+  overflow-y: auto;
+}

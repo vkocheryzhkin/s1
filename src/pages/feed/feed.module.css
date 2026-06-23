@@ -1,0 +1,18 @@
+.container {
+  width: 1240px;
+  margin: 0 auto;
+}
+
+.content {
+  display: flex;
+  gap: 60px;
+}
+
+.orders {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  max-width: 608px;
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
+}

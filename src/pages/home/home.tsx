@@ -8,7 +8,8 @@ import { BurgerIngredients } from '@components/burger-ingredients/burger-ingredi
 import { Modal } from '@components/modal/modal';
 import { OrderDetails } from '@components/order-details/order-details';
 import { useAppDispatch, useAppSelector } from '@services/hooks';
-import { clearOrder, createOrder } from '@services/order-slice';
+import { createOrder } from '@services/order/order-actions';
+import { clearOrder } from '@services/order/order-slice';
 
 import styles from './home.module.css';
 

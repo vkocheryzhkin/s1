@@ -79,6 +79,31 @@ export type TMessageResponse = {
   message: string;
 };
 
+export type TOrderStatus = 'created' | 'pending' | 'done';
+
+export type TOrder = {
+  _id: string;
+  ingredients: string[];
+  status: TOrderStatus;
+  name?: string;
+  createdAt: string;
+  updatedAt: string;
+  number: number;
+};
+
+export type TOrdersResponse = {
+  success: boolean;
+  orders: TOrder[];
+  total: number;
+  totalToday: number;
+  message?: string;
+};
+
+export type TOrderByNumberResponse = {
+  success: boolean;
+  orders: TOrder[];
+};
+
 export type TPasswordResetRequest = {
   email: string;
 };

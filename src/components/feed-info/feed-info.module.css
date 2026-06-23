@@ -1,0 +1,51 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+  width: 100%;
+  max-width: 580px;
+}
+
+.status_board {
+  display: flex;
+  gap: 36px;
+}
+
+.status_group {
+  flex: 1;
+  min-width: 0;
+}
+
+.columns {
+  display: flex;
+  gap: 36px;
+}
+
+.numbers {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.number {
+  text-shadow: 0 0 16px rgb(51 51 255 / 25%);
+}
+
+.number_ready {
+  color: #0cc;
+}
+
+.total_block {
+  display: block;
+}
+
+.total_value {
+  margin: 8px 0 0;
+  text-shadow:
+    0 0 16px rgb(51 51 255 / 25%),
+    0 0 8px rgb(51 51 255 / 25%),
+    0 4px 32px rgb(51 51 255 / 25%);
+}
