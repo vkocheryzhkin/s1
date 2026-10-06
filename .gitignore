@@ -29,3 +29,8 @@ playwright-report
 test-results
 figma_styles
 images/
+
+# Playwright
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/

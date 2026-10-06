@@ -37,4 +37,7 @@
 	},
 ```
 
-## Notes: already in typescript
+## Published
+
+[https://vkocheryzhkin.github.io/s1/](https://vkocheryzhkin.github.io/s1/)
+
